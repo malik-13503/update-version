@@ -63,38 +63,45 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
         <div className="max-w-4xl mx-auto">
           {/* Video Header */}
           <div className="bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] text-white text-center py-4 md:py-6 rounded-t-lg shadow-lg">
-            <div className="flex items-center justify-center space-x-2 md:space-x-3">
-              <PlayCircle className="animate-pulse" size={24} />
-              <h2 className="text-lg md:text-2xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>CLICK BELOW TO WATCH THE VIDEO</h2>
+            <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-3 px-4">
+              <PlayCircle className="animate-pulse flex-shrink-0" size={24} />
+              <h2 className="text-base md:text-2xl font-bold text-center md:text-left" style={{ fontFamily: 'Montserrat, sans-serif' }}>CLICK BELOW TO WATCH THE VIDEO</h2>
             </div>
           </div>
           
           {/* Video Player */}
           <div className="relative bg-gray-900 rounded-b-lg shadow-2xl overflow-hidden">
             <div className="aspect-video relative">
-              {/* Video placeholder with play button */}
+              {/* Video preview with play button */}
               {!isPlaying && (
-                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-                  {/* Background particles effect */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute w-2 h-2 bg-yellow-400 rounded-full opacity-70 animate-float" style={{ top: '20%', left: '15%' }}></div>
-                    <div className="absolute w-1 h-1 bg-orange-400 rounded-full opacity-60 animate-bounce-slow" style={{ top: '40%', left: '80%' }}></div>
-                    <div className="absolute w-3 h-3 bg-blue-400 rounded-full opacity-50 animate-pulse" style={{ top: '60%', left: '25%' }}></div>
-                    <div className="absolute w-1 h-1 bg-yellow-300 rounded-full opacity-80 animate-float" style={{ top: '80%', left: '70%' }}></div>
-                    <div className="absolute w-2 h-2 bg-orange-300 rounded-full opacity-40 animate-bounce" style={{ top: '30%', left: '60%' }}></div>
-                  </div>
+                <div className="w-full h-full relative">
+                  {/* Video thumbnail */}
+                  <video 
+                    className="w-full h-full object-cover"
+                    preload="metadata"
+                    muted
+                    playsInline
+                    poster=""
+                  >
+                    <source src="/videos/d4u-scratch-win-video.mp4#t=5" type="video/mp4" />
+                  </video>
+                  
+                  {/* Dark overlay for better button visibility */}
+                  <div className="absolute inset-0 bg-black bg-opacity-30"></div>
                   
                   {/* Play Button */}
                   <button 
                     onClick={handlePlay}
                     disabled={isLoading}
-                    className="relative z-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 transform hover:scale-110 transition-all duration-300 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="absolute inset-0 flex items-center justify-center z-10 bg-transparent hover:bg-black hover:bg-opacity-20 transition-all duration-300"
                   >
-                    {isLoading ? (
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F76D46]"></div>
-                    ) : (
-                      <Play className="text-4xl text-[#F76D46] ml-1" size={48} />
-                    )}
+                    <div className="bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 transform hover:scale-110 transition-all duration-300 shadow-2xl">
+                      {isLoading ? (
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F76D46]"></div>
+                      ) : (
+                        <Play className="text-4xl text-[#F76D46] ml-1" size={48} />
+                      )}
+                    </div>
                   </button>
                 </div>
               )}

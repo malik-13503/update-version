@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Phone, Mail, Gamepad2, Video, CheckCircle, Lock, Unlock, Sparkles, Trophy } from "lucide-react";
+import { User, Phone, Mail, Gamepad2, Video, CheckCircle, Lock, Unlock, Sparkles, Trophy, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -86,14 +86,24 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
   };
 
   return (
-    <section className="bg-white py-16">
-      <div className="container mx-auto px-4">
+    <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 left-10 w-20 h-20 bg-[#F76D46] rounded-full opacity-10 animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-[#2C5CDC] rounded-full opacity-10 animate-bounce"></div>
+        <div className="absolute top-1/2 left-20 w-16 h-16 bg-yellow-300 rounded-full opacity-20 animate-float"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
+            <div className="inline-block p-3 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-full mb-6 shadow-lg animate-bounce">
+              <Gift className="text-white" size={32} />
+            </div>
             <h2 className="text-3xl md:text-4xl font-black text-[#2C5CDC] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Ready to Play?
+              🎉 Ready to Play? 🎉
             </h2>
-            <p className="text-lg text-gray-600 mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-gray-700 mb-6 font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Enter your details below to unlock the scratch & win game!
             </p>
             
@@ -114,8 +124,11 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
           </div>
           
           {/* Registration Form */}
-          <div className="bg-gradient-to-br from-[#2C5CDC] to-[#F76D46] rounded-2xl shadow-2xl p-1">
-            <div className="bg-white rounded-2xl p-8">
+          <div className="bg-gradient-to-br from-[#2C5CDC] via-purple-500 to-[#F76D46] rounded-2xl shadow-2xl p-1 transform hover:scale-105 transition-all duration-300 animate-pulse">
+            <div className="bg-white rounded-2xl p-8 shadow-inner relative overflow-hidden">
+              {/* Decorative corner elements */}
+              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#F76D46] to-transparent opacity-10 rounded-bl-full"></div>
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-[#2C5CDC] to-transparent opacity-10 rounded-tr-full"></div>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Name Field */}
