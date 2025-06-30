@@ -87,24 +87,27 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
 
   return (
     <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 relative overflow-hidden">
-      {/* Background decorative elements */}
+      {/* Subtle background pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-[#F76D46] rounded-full opacity-10 animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-[#2C5CDC] rounded-full opacity-10 animate-bounce"></div>
-        <div className="absolute top-1/2 left-20 w-16 h-16 bg-yellow-300 rounded-full opacity-20 animate-float"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 bg-[#F76D46] rounded-full opacity-5"></div>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-[#2C5CDC] rounded-full opacity-5"></div>
+        <div className="absolute top-1/2 left-20 w-16 h-16 bg-yellow-300 rounded-full opacity-5"></div>
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
-            <div className="inline-block p-3 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-full mb-6 shadow-lg animate-bounce">
-              <Gift className="text-white" size={32} />
+            <div className="inline-block p-4 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-full mb-8 shadow-xl">
+              <Trophy className="text-white" size={40} />
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-[#2C5CDC] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              🎉 Ready to Play? 🎉
+            <h2 className="text-4xl md:text-5xl font-black text-[#2C5CDC] mb-6 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              WORLD'S BEST SCRATCH & WIN GAME
             </h2>
-            <p className="text-lg text-gray-700 mb-6 font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Enter your details below to unlock the scratch & win game!
+            <p className="text-xl text-gray-800 mb-4 font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Exclusive Access • Premium Experience • Incredible Prizes
+            </p>
+            <p className="text-lg text-gray-600 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Join thousands of winners and unlock your chance to win big!
             </p>
             
             {/* Video Watch Status */}
@@ -124,11 +127,16 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
           </div>
           
           {/* Registration Form */}
-          <div className="bg-gradient-to-br from-[#2C5CDC] via-purple-500 to-[#F76D46] rounded-2xl shadow-2xl p-1 transform hover:scale-105 transition-all duration-300 animate-pulse">
-            <div className="bg-white rounded-2xl p-8 shadow-inner relative overflow-hidden">
-              {/* Decorative corner elements */}
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#F76D46] to-transparent opacity-10 rounded-bl-full"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-[#2C5CDC] to-transparent opacity-10 rounded-tr-full"></div>
+          <div className="bg-gradient-to-br from-[#2C5CDC] to-[#F76D46] rounded-2xl shadow-2xl p-2">
+            <div className="bg-white rounded-xl p-8 shadow-inner relative">
+              {/* Premium header badge */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] text-white px-6 py-2 rounded-full shadow-lg">
+                <span className="text-sm font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>PREMIUM ACCESS</span>
+              </div>
+              
+              {/* Subtle corner accents */}
+              <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-bl from-[#F76D46]/10 to-transparent rounded-full"></div>
+              <div className="absolute bottom-4 left-4 w-6 h-6 bg-gradient-to-tr from-[#2C5CDC]/10 to-transparent rounded-full"></div>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Name Field */}
@@ -235,28 +243,27 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
                 {/* Submit Button */}
                 <div className="relative">
                   {videoWatched && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-[#F76D46] via-yellow-400 to-[#2C5CDC] rounded-lg blur opacity-75 animate-pulse"></div>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-lg blur opacity-30"></div>
                   )}
                   <Button
                     type="submit"
                     disabled={!videoWatched || registerMutation.isPending}
                     className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-6 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
-                      !videoWatched ? 'from-gray-400 to-gray-500 cursor-not-allowed transform-none' : 'hover:shadow-[#F76D46]/50'
+                      !videoWatched ? 'from-gray-400 to-gray-500 cursor-not-allowed transform-none' : 'hover:shadow-xl'
                     }`}
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     <div className="flex items-center justify-center space-x-3">
-                      {videoWatched && <Sparkles className="animate-spin" size={20} />}
-                      <Gamepad2 className={videoWatched ? "animate-bounce" : ""} size={20} />
-                      <span>
+                      <Trophy size={24} />
+                      <span className="font-black text-xl">
                         {registerMutation.isPending 
                           ? "REGISTERING..." 
                           : videoWatched 
-                            ? "🎮 PLAY SCRATCH & WIN GAME NOW! 🎮" 
-                            : "COMPLETE VIDEO TO UNLOCK GAME"
+                            ? "ACCESS PREMIUM GAME NOW" 
+                            : "COMPLETE VIDEO TO UNLOCK"
                         }
                       </span>
-                      {videoWatched && <Sparkles className="animate-spin" size={20} />}
+                      <Trophy size={24} />
                     </div>
                   </Button>
                 </div>
