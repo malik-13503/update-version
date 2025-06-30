@@ -100,14 +100,11 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
             <div className="inline-block p-4 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-full mb-8 shadow-xl">
               <Trophy className="text-white" size={40} />
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-[#2C5CDC] mb-6 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              WORLD'S BEST SCRATCH & WIN GAME
+            <h2 className="text-3xl md:text-4xl font-black text-[#2C5CDC] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Ready to Play?
             </h2>
-            <p className="text-xl text-gray-800 mb-4 font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Exclusive Access • Premium Experience • Incredible Prizes
-            </p>
-            <p className="text-lg text-gray-600 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Join thousands of winners and unlock your chance to win big!
+            <p className="text-lg text-gray-600 mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Enter your details below to unlock the scratch & win game!
             </p>
             
             {/* Video Watch Status */}
@@ -129,9 +126,9 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
           {/* Registration Form */}
           <div className="bg-gradient-to-br from-[#2C5CDC] to-[#F76D46] rounded-2xl shadow-2xl p-2">
             <div className="bg-white rounded-xl p-8 shadow-inner relative">
-              {/* Premium header badge */}
+              {/* Play Now badge */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] text-white px-6 py-2 rounded-full shadow-lg">
-                <span className="text-sm font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>PREMIUM ACCESS</span>
+                <span className="text-sm font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>Play Now</span>
               </div>
               
               {/* Subtle corner accents */}
