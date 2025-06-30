@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import gameCardImage from "@assets/Home-page-D4U-Pros-Scratch-&-Win-Game-Card-EMPTY_1751279689511.png";
 
 export default function GamePreview() {
   const { data: stats } = useQuery({
@@ -15,51 +16,14 @@ export default function GamePreview() {
         </div>
         
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {/* Game Card 1 */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-105 transition-all duration-300">
-              <div className="relative">
-                <div className="bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 rounded-xl p-6 mb-6">
-                  <div className="text-center text-white mb-4">
-                    <h4 className="text-2xl font-black mb-2">MATCH 3</h4>
-                    <h4 className="text-xl font-bold">& YOU WIN!</h4>
-                  </div>
-                  
-                  {/* Scratch Area Grid */}
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    {[...Array(9)].map((_, i) => (
-                      <div key={i} className="aspect-square bg-gray-800 rounded border-2 border-yellow-400"></div>
-                    ))}
-                  </div>
-                  
-                  <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
-                    PLAY NOW
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Game Card 2 */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-105 transition-all duration-300">
-              <div className="relative">
-                <div className="bg-gradient-to-br from-blue-600 via-purple-500 to-pink-500 rounded-xl p-6 mb-6">
-                  <div className="text-center text-white mb-4">
-                    <h4 className="text-2xl font-black mb-2">MATCH 3</h4>
-                    <h4 className="text-xl font-bold">& YOU WIN!</h4>
-                  </div>
-                  
-                  {/* Scratch Area Grid */}
-                  <div className="grid grid-cols-3 gap-2 mb-4">
-                    {[...Array(9)].map((_, i) => (
-                      <div key={i} className="aspect-square bg-gray-800 rounded border-2 border-yellow-400"></div>
-                    ))}
-                  </div>
-                  
-                  <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-300">
-                    PLAY NOW
-                  </button>
-                </div>
-              </div>
+          {/* Game Card Preview */}
+          <div className="flex justify-center mb-12">
+            <div className="bg-white rounded-2xl shadow-2xl p-4 md:p-8 transform hover:scale-105 transition-all duration-300 max-w-4xl w-full">
+              <img 
+                src={gameCardImage} 
+                alt="Scratch & Win Game Card" 
+                className="w-full h-auto object-contain rounded-xl"
+              />
             </div>
           </div>
           

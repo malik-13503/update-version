@@ -1,10 +1,16 @@
-import { users, type User, type InsertUser } from "@shared/schema";
+import { users, registrations, type User, type InsertUser, type Registration, type InsertRegistration } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 
-// keep IStorage the same
+export interface IStorage {
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(insertUser: InsertUser): Promise<User>;
+  getRegistrationByEmail(email: string): Promise<Registration | undefined>;
+  createRegistration(insertRegistration: InsertRegistration): Promise<Registration>;
+  getRegistrationCount(): Promise<number>;
+}
 
-// rewrite MemStorage to DatabaseStorage
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -22,6 +28,24 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  async getRegistrationByEmail(email: string): Promise<Registration | undefined> {
+    const [registration] = await db.select().from(registrations).where(eq(registrations.email, email));
+    return registration || undefined;
+  }
+
+  async createRegistration(insertRegistration: InsertRegistration): Promise<Registration> {
+    const [registration] = await db
+      .insert(registrations)
+      .values(insertRegistration)
+      .returning();
+    return registration;
+  }
+
+  async getRegistrationCount(): Promise<number> {
+    const [result] = await db.select({ count: count() }).from(registrations);
+    return Number(result.count);
   }
 }
 
