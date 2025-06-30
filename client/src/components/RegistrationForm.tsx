@@ -233,22 +233,33 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
                 />
                 
                 {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={!videoWatched || registerMutation.isPending}
-                  className={`w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-bold py-4 px-6 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-lg ${
-                    !videoWatched ? 'from-gray-400 to-gray-500 cursor-not-allowed transform-none' : ''
-                  }`}
-                  style={{ fontFamily: 'Montserrat, sans-serif' }}
-                >
-                  <Gamepad2 className="mr-2" size={20} />
-                  {registerMutation.isPending 
-                    ? "REGISTERING..." 
-                    : videoWatched 
-                      ? "PLAY SCRATCH & WIN GAME NOW!" 
-                      : "COMPLETE VIDEO TO UNLOCK GAME"
-                  }
-                </Button>
+                <div className="relative">
+                  {videoWatched && (
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#F76D46] via-yellow-400 to-[#2C5CDC] rounded-lg blur opacity-75 animate-pulse"></div>
+                  )}
+                  <Button
+                    type="submit"
+                    disabled={!videoWatched || registerMutation.isPending}
+                    className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-6 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
+                      !videoWatched ? 'from-gray-400 to-gray-500 cursor-not-allowed transform-none' : 'hover:shadow-[#F76D46]/50'
+                    }`}
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    <div className="flex items-center justify-center space-x-3">
+                      {videoWatched && <Sparkles className="animate-spin" size={20} />}
+                      <Gamepad2 className={videoWatched ? "animate-bounce" : ""} size={20} />
+                      <span>
+                        {registerMutation.isPending 
+                          ? "REGISTERING..." 
+                          : videoWatched 
+                            ? "🎮 PLAY SCRATCH & WIN GAME NOW! 🎮" 
+                            : "COMPLETE VIDEO TO UNLOCK GAME"
+                        }
+                      </span>
+                      {videoWatched && <Sparkles className="animate-spin" size={20} />}
+                    </div>
+                  </Button>
+                </div>
                 
                 {/* Terms & Conditions */}
                 <div className="text-center text-sm text-gray-600 mt-4">
