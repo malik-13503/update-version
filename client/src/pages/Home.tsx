@@ -13,7 +13,7 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[hsl(16,100%,64%)] via-[hsl(16,85%,69%)] to-[hsl(227,100%,65%)] py-16 md:py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-[#F76D46] via-[#F76D46] to-[#2C5CDC] py-16 md:py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-10"></div>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -25,7 +25,7 @@ export default function Home() {
         
         <div className="relative container mx-auto px-4 text-center">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               DONE FOR YOU PROS 
               <span className="block text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-yellow-300 mt-2">IS DONE RIGHT!</span>
             </h1>
@@ -43,7 +43,7 @@ export default function Home() {
               </div>
             </div>
             
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold mb-8 px-4">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold mb-8 px-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Watch Our Video & Play Our Scratch & Win Game for a Chance to Win 
               <span className="text-yellow-300 font-black block sm:inline"> $5 MILLION</span> in Instant Prizes!
             </p>

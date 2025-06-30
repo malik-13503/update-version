@@ -77,7 +77,15 @@ The application follows a monorepo structure with separate client and server dir
 ## Changelog
 
 - June 30, 2025. Initial setup
+- June 30, 2025. Updated color scheme to use specific brand colors (#2C5CDC and #F76D46)
+- June 30, 2025. Added Montserrat font throughout the application
+- June 30, 2025. Updated form design with gradient border container
+- June 30, 2025. Updated footer to match reference design with light background
+- June 30, 2025. Added user's video file to video section
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Brand colors: #2C5CDC (blue) and #F76D46 (orange)
+Font: Montserrat for all text elements
+Form design: Gradient border container with white background interior

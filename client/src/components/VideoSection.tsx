@@ -54,10 +54,10 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Video Header */}
-          <div className="bg-gradient-to-r from-[hsl(16,100%,64%)] to-[hsl(16,85%,69%)] text-white text-center py-4 md:py-6 rounded-t-lg shadow-lg">
+          <div className="bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] text-white text-center py-4 md:py-6 rounded-t-lg shadow-lg">
             <div className="flex items-center justify-center space-x-2 md:space-x-3">
               <PlayCircle className="animate-pulse" size={24} />
-              <h2 className="text-lg md:text-2xl font-bold">CLICK BELOW TO WATCH THE VIDEO</h2>
+              <h2 className="text-lg md:text-2xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>CLICK BELOW TO WATCH THE VIDEO</h2>
             </div>
           </div>
           
@@ -93,7 +93,7 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
                 controls
                 onPlay={() => setIsPlaying(true)}
               >
-                <source src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" type="video/mp4" />
+                <source src="/attached_assets/Michael Patrick - PART 1 D4UP Scratch & Win (1)_1751280936821.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
               
