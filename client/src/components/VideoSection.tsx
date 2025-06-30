@@ -9,12 +9,20 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showComplete, setShowComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handlePlay = () => {
+    setIsLoading(true);
     setIsPlaying(true);
     if (videoRef.current) {
-      videoRef.current.play();
+      videoRef.current.play()
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -79,9 +87,14 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
                   {/* Play Button */}
                   <button 
                     onClick={handlePlay}
-                    className="relative z-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 transform hover:scale-110 transition-all duration-300 shadow-2xl"
+                    disabled={isLoading}
+                    className="relative z-10 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-6 transform hover:scale-110 transition-all duration-300 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Play className="text-4xl text-[hsl(16,100%,64%)] ml-1" size={48} />
+                    {isLoading ? (
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F76D46]"></div>
+                    ) : (
+                      <Play className="text-4xl text-[#F76D46] ml-1" size={48} />
+                    )}
                   </button>
                 </div>
               )}
@@ -91,9 +104,11 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
                 ref={videoRef}
                 className={`w-full h-full object-cover ${!isPlaying ? 'hidden' : ''}`}
                 controls
+                preload="metadata"
+                playsInline
                 onPlay={() => setIsPlaying(true)}
               >
-                <source src="/attached_assets/Michael Patrick - PART 1 D4UP Scratch & Win (1)_1751280936821.mp4" type="video/mp4" />
+                <source src="/videos/d4u-scratch-win-video.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
               
