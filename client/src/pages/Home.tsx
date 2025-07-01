@@ -44,8 +44,10 @@ export default function Home() {
             </div>
             
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold mb-8 px-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Watch Our Video & Play Our Scratch & Win Game for a Chance to Win 
-              <span className="text-yellow-300 font-black block sm:inline"> $5 MILLION</span> in Instant Prizes!
+              Watch our Video to see the Amazing Prizes you can WIN!
+              <br />
+              You get to play TWO of our Scratch and Win Games! Yes, TWO chances to be an INSTANT WINNER,
+              <span className="text-yellow-300 font-black block sm:inline"> $5 Million</span> in Instant Prizes!
             </p>
           </div>
         </div>
