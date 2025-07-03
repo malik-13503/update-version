@@ -122,14 +122,16 @@ export default function Game() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section - Exact match to your design */}
-      <div className="bg-gradient-to-r from-orange-400 to-orange-500 px-4 py-4">
+      <div className="px-4 py-4" style={{ backgroundColor: '#ffb22a' }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center">
-            <img 
-              src="/logo.png" 
-              alt="Done For You Pros" 
-              className="h-12 md:h-16 w-auto"
-            />
+            <div className="bg-white p-2 rounded-lg">
+              <img 
+                src="/logo.png" 
+                alt="Done For You Pros" 
+                className="h-16 md:h-20 w-auto"
+              />
+            </div>
           </div>
           <div className="text-white font-bold text-xl md:text-3xl" style={wayComeFontStyle}>
             <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
@@ -141,10 +143,10 @@ export default function Game() {
       {/* Game Title Section */}
       <div className="bg-white py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-orange-500 mb-2 leading-tight" style={wayComeFontStyle}>
+          <h1 className="text-3xl md:text-5xl font-bold mb-2 leading-tight" style={{...wayComeFontStyle, color: '#f76c46'}}>
             IT'S TIME TO PLAY OUR SCRATCH &<br/>WIN GAME
           </h1>
-          <h2 className="text-2xl md:text-4xl font-bold text-blue-600 mt-4" style={wayComeFontStyle}>
+          <h2 className="text-2xl md:text-4xl font-bold mt-4" style={{...wayComeFontStyle, color: '#2b5bdc'}}>
             2 CHANCES TO WIN AMAZING PRIZES!
           </h2>
         </div>
@@ -167,7 +169,7 @@ export default function Game() {
       </div>
 
       {/* Footer Section */}
-      <div className="bg-gradient-to-r from-orange-400 to-orange-500 py-2">
+      <div className="py-2" style={{ backgroundColor: '#ffb22a' }}>
         <div className="bg-black text-white py-4 text-center">
           <p className="text-lg md:text-xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Our 20 Connection New Parts Installations Program
@@ -233,19 +235,15 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
   return (
     <div className="flex justify-center">
       <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px]">
-        {/* Colorful circular background - exact match to your design */}
-        <div className="absolute inset-0 rounded-full" style={{
-          background: `conic-gradient(from 0deg, 
-            #ff6b35 0deg 45deg,
-            #f7931e 45deg 90deg,
-            #ffd700 90deg 135deg,
-            #32cd32 135deg 180deg,
-            #40e0d0 180deg 225deg,
-            #4169e1 225deg 270deg,
-            #8b00ff 270deg 315deg,
-            #dc143c 315deg 360deg
-          )`
-        }}></div>
+        {/* Colorful circular background - using your wheel image */}
+        <div 
+          className="absolute inset-0 rounded-full bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('/wheel-background.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        ></div>
 
         {/* Inner content area */}
         <div className="absolute inset-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex flex-col items-center justify-center p-3 md:p-4">
