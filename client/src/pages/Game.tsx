@@ -38,6 +38,7 @@ export default function Game() {
     }
   }
   const [, setLocation] = useLocation();
+  const [currentCard, setCurrentCard] = useState(0); // Track which card is currently playable
   const [cards, setCards] = useState<ScratchCard[]>([
     {
       id: 1,
@@ -97,6 +98,9 @@ export default function Game() {
   const [gameComplete, setGameComplete] = useState(false);
 
   const handleScratch = (cardId: number, index: number) => {
+    // Only allow scratching the current card
+    if (cardId !== currentCard + 1) return;
+    
     setCards((prev) =>
       prev.map((card) => {
         if (card.id === cardId) {
@@ -108,15 +112,24 @@ export default function Game() {
       }),
     );
 
-    // Check if all cards are fully scratched
-    const allFullyScratched = cards.every((card) =>
-      card.id === cardId
-        ? card.scratches.every((_, i) => i === index || card.scratches[i])
-        : card.scratches.every((scratch) => scratch),
-    );
-
-    if (allFullyScratched) {
-      setTimeout(() => setGameComplete(true), 1000);
+    // Check if current card is fully scratched
+    const currentCardData = cards.find(card => card.id === cardId);
+    if (currentCardData) {
+      const newScratches = [...currentCardData.scratches];
+      newScratches[index] = true;
+      const isCurrentCardComplete = newScratches.every(scratch => scratch);
+      
+      if (isCurrentCardComplete) {
+        setTimeout(() => {
+          if (currentCard === 0) {
+            // Move to second card
+            setCurrentCard(1);
+          } else {
+            // Both cards complete, show winner modal
+            setGameComplete(true);
+          }
+        }, 1000);
+      }
     }
   };
 
@@ -177,6 +190,7 @@ export default function Game() {
         ],
       },
     ]);
+    setCurrentCard(0);
     setGameComplete(false);
   };
 
@@ -186,24 +200,24 @@ export default function Game() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header Section - Exact match to your design */}
-      <div className="px-4 py-4" style={{ backgroundColor: "#ffb22a" }}>
+      {/* Header Section - Reduced height and responsive */}
+      <div className="px-4 py-2 md:py-3" style={{ backgroundColor: "#ffb22a" }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center">
-            <div className="bg-white p-2 rounded-lg">
+            <div className="bg-white p-1 md:p-2 rounded-lg">
               <img
                 src="/logo.png"
                 alt="Done For You Pros"
-                className="h-16 md:h-20 w-auto"
+                className="h-10 md:h-14 w-auto"
               />
             </div>
           </div>
           <div
-            className="text-white font-bold text-xl md:text-3xl"
+            className="text-white font-bold flex flex-col md:flex-row items-center md:items-baseline"
             style={wayComeFontStyle}
           >
-            <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
-            <span className="text-black ml-2 text-lg md:text-xl">
+            <span className="text-white text-lg md:text-3xl">$5 MILLION</span>
+            <span className="text-black md:ml-2 text-sm md:text-xl">
               INSTANT PRIZES
             </span>
           </div>
@@ -233,12 +247,14 @@ export default function Game() {
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-            {cards.map((card) => (
+            {cards.map((card, index) => (
               <ScratchOffCard
                 key={card.id}
                 card={card}
                 onScratch={handleScratch}
                 isFullyScratched={isCardFullyScratched(card)}
+                isPlayable={index === currentCard}
+                isNextCard={index === currentCard + 1}
               />
             ))}
           </div>
@@ -298,12 +314,16 @@ interface ScratchOffCardProps {
   card: ScratchCard;
   onScratch: (cardId: number, index: number) => void;
   isFullyScratched: boolean;
+  isPlayable: boolean;
+  isNextCard: boolean;
 }
 
 function ScratchOffCard({
   card,
   onScratch,
   isFullyScratched,
+  isPlayable,
+  isNextCard,
 }: ScratchOffCardProps) {
   // Add custom font style for game page
   const wayComeFontStyle = {
@@ -314,24 +334,51 @@ function ScratchOffCard({
   const [scratchedCells, setScratchedCells] = useState<boolean[]>(
     card.scratches,
   );
+  const [isScratching, setIsScratching] = useState(false);
 
   const handleCellScratch = (index: number) => {
+    if (!isPlayable) return;
     const newScratched = [...scratchedCells];
     newScratched[index] = true;
     setScratchedCells(newScratched);
     onScratch(card.id, index);
   };
 
+  const handleMouseDown = (index: number) => {
+    if (!isPlayable) return;
+    setIsScratching(true);
+    handleCellScratch(index);
+  };
+
+  const handleMouseEnter = (index: number) => {
+    if (!isPlayable || !isScratching) return;
+    handleCellScratch(index);
+  };
+
+  const handleMouseUp = () => {
+    setIsScratching(false);
+  };
+
   useEffect(() => {
     setScratchedCells(card.scratches);
   }, [card.scratches]);
 
+  useEffect(() => {
+    const handleGlobalMouseUp = () => setIsScratching(false);
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('touchend', handleGlobalMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchend', handleGlobalMouseUp);
+    };
+  }, []);
+
   return (
     <div className="flex justify-center">
-      <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px]">
-        {/* Colorful circular background - using your wheel image */}
+      <div className={`relative w-80 h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px] ${!isPlayable && !isFullyScratched ? 'opacity-50' : ''}`}>
+        {/* Square background with border matching the square color */}
         <div
-          className="absolute inset-0 rounded-full bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg border-4 border-yellow-400"
           style={{
             backgroundImage: `url('/wheel-background.png')`,
             backgroundSize: "cover",
@@ -339,13 +386,13 @@ function ScratchOffCard({
           }}
         ></div>
 
-        {/* Inner content area */}
-        <div className="absolute inset-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex flex-col items-center justify-center p-3 md:p-4">
+        {/* Inner content area with square layout */}
+        <div className="absolute inset-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex flex-col items-center justify-center p-3 md:p-4 border-2 border-yellow-400">
           {/* Match 3 Header */}
           <div className="text-center mb-2 md:mb-3">
             <div className="flex items-center justify-center mb-1">
               <span
-                className="text-white font-bold text-xl md:text-2xl lg:text-3xl mr-2"
+                className="text-white font-bold text-lg md:text-2xl lg:text-3xl mr-2"
                 style={{
                   ...wayComeFontStyle,
                   textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
@@ -353,12 +400,12 @@ function ScratchOffCard({
               >
                 MATCH
               </span>
-              <div className="bg-yellow-400 rounded-full w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center">
+              <div className="bg-yellow-400 rounded-full w-7 h-7 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center">
                 <span
-                  className="text-white font-bold text-lg md:text-xl lg:text-2xl"
+                  className="text-black font-bold text-base md:text-xl lg:text-2xl"
                   style={{
                     ...wayComeFontStyle,
-                    textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                    textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
                   }}
                 >
                   3
@@ -366,7 +413,7 @@ function ScratchOffCard({
               </div>
             </div>
             <p
-              className="text-white font-bold text-sm md:text-lg lg:text-xl"
+              className="text-white font-bold text-xs md:text-lg lg:text-xl"
               style={{
                 ...wayComeFontStyle,
                 textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
