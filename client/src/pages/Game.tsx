@@ -340,7 +340,7 @@ function ScratchOffCard({
         ></div>
 
         {/* Inner content area */}
-        <div className="absolute inset-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex flex-col items-center justify-center p-3 md:p-4">
+        <div className="absolute inset-4  rounded-full flex flex-col items-center justify-center p-3 md:p-4">
           {/* Match 3 Header */}
           <div className="text-center mb-2 md:mb-3">
             <div className="flex items-center justify-center mb-1">
@@ -438,7 +438,7 @@ function ScratchOffCard({
 
           {/* Play Now Button */}
           <div
-            className="bg-yellow-400 text-black font-bold py-2 px-4 md:px-6 rounded text-sm md:text-lg"
+            className="bg-yellow-400 text-black font-bold py-1 px-4 md:px-6 rounded text-sm md:text-lg"
             style={{ fontFamily: "Montserrat, sans-serif" }}
           >
             {isFullyScratched
