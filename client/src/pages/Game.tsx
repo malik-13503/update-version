@@ -211,6 +211,12 @@ interface ScratchOffCardProps {
 }
 
 function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardProps) {
+  // Add custom font style for game page
+  const wayComeFontStyle = {
+    fontFamily: 'WayCome, sans-serif',
+    fontWeight: 'bold'
+  };
+  
   const [scratchedCells, setScratchedCells] = useState<boolean[]>(card.scratches);
   
   const handleCellScratch = (index: number) => {
