@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import ScratchCard from "@/components/ScratchCard";
 
-interface GameCard {
+interface ScratchCard {
   id: number;
   isWinner: boolean;
-  isUnlocked: boolean;
-  isCompleted: boolean;
+  scratches: boolean[];
   prizes: string[];
   prizeValues: string[];
 }
@@ -40,12 +38,11 @@ export default function Game() {
     }
   }
   const [, setLocation] = useLocation();
-  const [cards, setCards] = useState<GameCard[]>([
+  const [cards, setCards] = useState<ScratchCard[]>([
     {
       id: 1,
       isWinner: false,
-      isUnlocked: true,
-      isCompleted: false,
+      scratches: new Array(9).fill(false),
       prizes: [
         "Free Standing Refrigerator",
         "Master Bathroom Sink",
@@ -72,8 +69,7 @@ export default function Game() {
     {
       id: 2,
       isWinner: true,
-      isUnlocked: false,
-      isCompleted: false,
+      scratches: new Array(9).fill(false),
       prizes: [
         "Dishwasher New Water Valve Installation",
         "Dishwasher New Water Valve Installation",
@@ -99,35 +95,29 @@ export default function Game() {
     },
   ]);
   const [gameComplete, setGameComplete] = useState(false);
-  const [winner, setWinner] = useState<GameCard | null>(null);
 
-  const handleCardComplete = (cardId: number) => {
+  const handleScratch = (cardId: number, index: number) => {
     setCards((prev) =>
       prev.map((card) => {
         if (card.id === cardId) {
-          const updatedCard = { ...card, isCompleted: true };
-          
-          // Check if this is a winning card
-          if (card.isWinner) {
-            setWinner(updatedCard);
-            setTimeout(() => setGameComplete(true), 500);
-          }
-          
-          return updatedCard;
+          const newScratches = [...card.scratches];
+          newScratches[index] = true;
+          return { ...card, scratches: newScratches };
         }
         return card;
       }),
     );
 
-    // Unlock the next card
-    setCards((prev) =>
-      prev.map((card) => {
-        if (card.id === cardId + 1) {
-          return { ...card, isUnlocked: true };
-        }
-        return card;
-      }),
+    // Check if all cards are fully scratched
+    const allFullyScratched = cards.every((card) =>
+      card.id === cardId
+        ? card.scratches.every((_, i) => i === index || card.scratches[i])
+        : card.scratches.every((scratch) => scratch),
     );
+
+    if (allFullyScratched) {
+      setTimeout(() => setGameComplete(true), 1000);
+    }
   };
 
   const resetGame = () => {
@@ -196,24 +186,24 @@ export default function Game() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header Section - Responsive design */}
-      <div className="px-4 py-3" style={{ backgroundColor: "#ffb22a" }}>
+      {/* Header Section - Exact match to your design */}
+      <div className="px-4 py-4" style={{ backgroundColor: "#ffb22a" }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center">
             <div className="bg-white p-2 rounded-lg">
               <img
                 src="/logo.png"
                 alt="Done For You Pros"
-                className="h-10 md:h-12 w-auto max-w-[100px] md:max-w-[140px]"
+                className="h-16 md:h-20 w-auto"
               />
             </div>
           </div>
           <div
-            className="text-white font-bold flex flex-col md:flex-row items-center md:items-baseline"
+            className="text-white font-bold text-xl md:text-3xl"
             style={wayComeFontStyle}
           >
-            <span className="text-white text-lg md:text-3xl lg:text-4xl">$5 MILLION</span>
-            <span className="text-black text-sm md:text-xl lg:text-2xl md:ml-2">
+            <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
+            <span className="text-black ml-2 text-lg md:text-xl">
               INSTANT PRIZES
             </span>
           </div>
