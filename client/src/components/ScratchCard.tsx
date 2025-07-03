@@ -9,13 +9,13 @@ interface ScratchCardProps {
   isScratched?: boolean;
 }
 
-export default function ScratchCard({ 
-  width, 
-  height, 
-  scratchPercent = 50, 
-  onScratchComplete, 
+export default function ScratchCard({
+  width,
+  height,
+  scratchPercent = 50,
+  onScratchComplete,
   children,
-  isScratched = false
+  isScratched = false,
 }: ScratchCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -30,7 +30,7 @@ export default function ScratchCard({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Set canvas size
@@ -38,15 +38,14 @@ export default function ScratchCard({
     canvas.height = height;
 
     // Draw scratch overlay
-    ctx.fillStyle = '#4a5568';
+    ctx.fillStyle = "#4a5568";
     ctx.fillRect(0, 0, width, height);
 
     // Set up for scratching
-    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalCompositeOperation = "destination-out";
     ctx.lineWidth = 20;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
   }, [width, height, isScratched]);
 
   const getEventPos = (e: any) => {
@@ -59,7 +58,7 @@ export default function ScratchCard({
 
     return {
       x: clientX - rect.left,
-      y: clientY - rect.top
+      y: clientY - rect.top,
     };
   };
 
@@ -67,7 +66,7 @@ export default function ScratchCard({
     if (isCompleted) return;
     setIsDrawing(true);
     const pos = getEventPos(e);
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
@@ -76,9 +75,9 @@ export default function ScratchCard({
 
   const scratch = (e: any) => {
     if (!isDrawing || isCompleted) return;
-    
+
     const pos = getEventPos(e);
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
@@ -88,22 +87,22 @@ export default function ScratchCard({
   const endScratch = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
-    
+
     // Check if enough has been scratched
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
     let transparent = 0;
-    
+
     for (let i = 3; i < pixels.length; i += 4) {
       if (pixels[i] === 0) transparent++;
     }
-    
+
     const percent = (transparent / (pixels.length / 4)) * 100;
-    
+
     if (percent > scratchPercent) {
       setIsCompleted(true);
       onScratchComplete?.();
@@ -127,7 +126,7 @@ export default function ScratchCard({
         onTouchStart={startScratch}
         onTouchMove={scratch}
         onTouchEnd={endScratch}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: "100%", height: "100%" }}
       />
     </div>
   );

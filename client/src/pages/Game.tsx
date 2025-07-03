@@ -13,8 +13,8 @@ interface ScratchCard {
 export default function Game() {
   // Add custom font style for game page
   const wayComeFontStyle = {
-    fontFamily: 'WayCome, sans-serif',
-    fontWeight: 'bold'
+    fontFamily: "WayCome, sans-serif",
+    fontWeight: "bold",
   };
 
   // Add font face to the page
@@ -28,60 +28,93 @@ export default function Game() {
   `;
 
   // Inject CSS
-  if (typeof document !== 'undefined') {
-    const existingStyle = document.getElementById('way-come-font');
+  if (typeof document !== "undefined") {
+    const existingStyle = document.getElementById("way-come-font");
     if (!existingStyle) {
-      const style = document.createElement('style');
-      style.id = 'way-come-font';
+      const style = document.createElement("style");
+      style.id = "way-come-font";
       style.textContent = fontFaceCSS;
       document.head.appendChild(style);
     }
   }
   const [, setLocation] = useLocation();
   const [cards, setCards] = useState<ScratchCard[]>([
-    { 
-      id: 1, 
-      isWinner: false, 
-      scratches: new Array(9).fill(false), 
+    {
+      id: 1,
+      isWinner: false,
+      scratches: new Array(9).fill(false),
       prizes: [
-        "Free Standing Refrigerator", "Master Bathroom Sink", "Washer", 
-        "Refrigerator New Water Line", "New Hot Water Valve & Line", "New Hot & Cold Water Lines",
-        "Dishwasher New Water Valve", "Kitchen Sink New Cold Water", "Cooktop, Range, or Stove"
+        "Free Standing Refrigerator",
+        "Master Bathroom Sink",
+        "Washer",
+        "Refrigerator New Water Line",
+        "New Hot Water Valve & Line",
+        "New Hot & Cold Water Lines",
+        "Dishwasher New Water Valve",
+        "Kitchen Sink New Cold Water",
+        "Cooktop, Range, or Stove",
       ],
-      prizeValues: ["$197", "$397", "$247", "$197", "$397", "$247", "$197", "$397", "$339"]
+      prizeValues: [
+        "$197",
+        "$397",
+        "$247",
+        "$197",
+        "$397",
+        "$247",
+        "$197",
+        "$397",
+        "$339",
+      ],
     },
-    { 
-      id: 2, 
-      isWinner: true, 
-      scratches: new Array(9).fill(false), 
+    {
+      id: 2,
+      isWinner: true,
+      scratches: new Array(9).fill(false),
       prizes: [
-        "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation",
-        "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation",
-        "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation"
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
+        "Dishwasher New Water Valve Installation",
       ],
-      prizeValues: ["$197", "$197", "$197", "$197", "$197", "$197", "$197", "$197", "$197"]
+      prizeValues: [
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+        "$197",
+      ],
     },
   ]);
   const [gameComplete, setGameComplete] = useState(false);
 
   const handleScratch = (cardId: number, index: number) => {
-    setCards(prev => 
-      prev.map(card => {
+    setCards((prev) =>
+      prev.map((card) => {
         if (card.id === cardId) {
           const newScratches = [...card.scratches];
           newScratches[index] = true;
           return { ...card, scratches: newScratches };
         }
         return card;
-      })
+      }),
     );
-    
+
     // Check if all cards are fully scratched
-    const allFullyScratched = cards.every(card => 
-      card.id === cardId ? card.scratches.every((_, i) => i === index || card.scratches[i]) : 
-      card.scratches.every(scratch => scratch)
+    const allFullyScratched = cards.every((card) =>
+      card.id === cardId
+        ? card.scratches.every((_, i) => i === index || card.scratches[i])
+        : card.scratches.every((scratch) => scratch),
     );
-    
+
     if (allFullyScratched) {
       setTimeout(() => setGameComplete(true), 1000);
     }
@@ -89,53 +122,90 @@ export default function Game() {
 
   const resetGame = () => {
     setCards([
-      { 
-        id: 1, 
-        isWinner: false, 
-        scratches: new Array(9).fill(false), 
+      {
+        id: 1,
+        isWinner: false,
+        scratches: new Array(9).fill(false),
         prizes: [
-          "Free Standing Refrigerator", "Master Bathroom Sink", "Washer", 
-          "Refrigerator New Water Line", "New Hot Water Valve & Line", "New Hot & Cold Water Lines",
-          "Dishwasher New Water Valve", "Kitchen Sink New Cold Water", "Cooktop, Range, or Stove"
+          "Free Standing Refrigerator",
+          "Master Bathroom Sink",
+          "Washer",
+          "Refrigerator New Water Line",
+          "New Hot Water Valve & Line",
+          "New Hot & Cold Water Lines",
+          "Dishwasher New Water Valve",
+          "Kitchen Sink New Cold Water",
+          "Cooktop, Range, or Stove",
         ],
-        prizeValues: ["$197", "$397", "$247", "$197", "$397", "$247", "$197", "$397", "$339"]
+        prizeValues: [
+          "$197",
+          "$397",
+          "$247",
+          "$197",
+          "$397",
+          "$247",
+          "$197",
+          "$397",
+          "$339",
+        ],
       },
-      { 
-        id: 2, 
-        isWinner: true, 
-        scratches: new Array(9).fill(false), 
+      {
+        id: 2,
+        isWinner: true,
+        scratches: new Array(9).fill(false),
         prizes: [
-          "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation",
-          "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation",
-          "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation", "Dishwasher New Water Valve Installation"
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
+          "Dishwasher New Water Valve Installation",
         ],
-        prizeValues: ["$197", "$197", "$197", "$197", "$197", "$197", "$197", "$197", "$197"]
+        prizeValues: [
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+          "$197",
+        ],
       },
     ]);
     setGameComplete(false);
   };
 
   const isCardFullyScratched = (card: ScratchCard) => {
-    return card.scratches.every(scratch => scratch);
+    return card.scratches.every((scratch) => scratch);
   };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section - Exact match to your design */}
-      <div className="px-4 py-4" style={{ backgroundColor: '#ffb22a' }}>
+      <div className="px-4 py-4" style={{ backgroundColor: "#ffb22a" }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center">
             <div className="bg-white p-2 rounded-lg">
-              <img 
-                src="/logo.png" 
-                alt="Done For You Pros" 
+              <img
+                src="/logo.png"
+                alt="Done For You Pros"
                 className="h-16 md:h-20 w-auto"
               />
             </div>
           </div>
-          <div className="text-white font-bold text-xl md:text-3xl" style={wayComeFontStyle}>
+          <div
+            className="text-white font-bold text-xl md:text-3xl"
+            style={wayComeFontStyle}
+          >
             <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
-            <span className="text-black ml-2 text-lg md:text-xl">INSTANT PRIZES</span>
+            <span className="text-black ml-2 text-lg md:text-xl">
+              INSTANT PRIZES
+            </span>
           </div>
         </div>
       </div>
@@ -143,10 +213,17 @@ export default function Game() {
       {/* Game Title Section */}
       <div className="bg-white py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-2 leading-tight" style={{...wayComeFontStyle, color: '#f76c46'}}>
-            IT'S TIME TO PLAY OUR SCRATCH &<br/>WIN GAME
+          <h1
+            className="text-3xl md:text-5xl font-bold mb-2 leading-tight"
+            style={{ ...wayComeFontStyle, color: "#f76c46" }}
+          >
+            IT'S TIME TO PLAY OUR SCRATCH &<br />
+            WIN GAME
           </h1>
-          <h2 className="text-2xl md:text-4xl font-bold mt-4" style={{...wayComeFontStyle, color: '#2b5bdc'}}>
+          <h2
+            className="text-2xl md:text-4xl font-bold mt-4"
+            style={{ ...wayComeFontStyle, color: "#2b5bdc" }}
+          >
             2 CHANCES TO WIN AMAZING PRIZES!
           </h2>
         </div>
@@ -169,33 +246,44 @@ export default function Game() {
       </div>
 
       {/* Footer Section */}
-      <div className="py-2" style={{ backgroundColor: '#ffb22a' }}>
+      <div className="py-2" style={{ backgroundColor: "#ffb22a" }}>
         <div className="bg-black text-white py-4 text-center">
-          <p className="text-lg md:text-xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p
+            className="text-lg md:text-xl font-bold"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
             Our 20 Connection New Parts Installations Program
           </p>
-          <p className="text-lg md:text-xl font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p
+            className="text-lg md:text-xl font-bold"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
             is already Protecting 300,000+ Home Owners nationwide
           </p>
         </div>
       </div>
-
-
 
       {/* Winner Modal */}
       {gameComplete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg text-center max-w-md mx-4">
             <div className="text-6xl mb-4">🎉</div>
-            <h3 className="text-2xl font-bold mb-4 text-green-600">Congratulations!</h3>
+            <h3 className="text-2xl font-bold mb-4 text-green-600">
+              Congratulations!
+            </h3>
             <p className="text-lg mb-6">
-              You won with the right card! You matched 3 "Dishwasher New Water Valve Installation" prizes!
+              You won with the right card! You matched 3 "Dishwasher New Water
+              Valve Installation" prizes!
             </p>
             <div className="flex space-x-4">
               <Button onClick={resetGame} className="flex-1">
                 Play Again
               </Button>
-              <Button onClick={() => setLocation("/")} variant="outline" className="flex-1">
+              <Button
+                onClick={() => setLocation("/")}
+                variant="outline"
+                className="flex-1"
+              >
                 Back to Home
               </Button>
             </div>
@@ -212,15 +300,21 @@ interface ScratchOffCardProps {
   isFullyScratched: boolean;
 }
 
-function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardProps) {
+function ScratchOffCard({
+  card,
+  onScratch,
+  isFullyScratched,
+}: ScratchOffCardProps) {
   // Add custom font style for game page
   const wayComeFontStyle = {
-    fontFamily: 'WayCome, sans-serif',
-    fontWeight: 'bold'
+    fontFamily: "WayCome, sans-serif",
+    fontWeight: "bold",
   };
-  
-  const [scratchedCells, setScratchedCells] = useState<boolean[]>(card.scratches);
-  
+
+  const [scratchedCells, setScratchedCells] = useState<boolean[]>(
+    card.scratches,
+  );
+
   const handleCellScratch = (index: number) => {
     const newScratched = [...scratchedCells];
     newScratched[index] = true;
@@ -236,12 +330,12 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
     <div className="flex justify-center">
       <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px]">
         {/* Colorful circular background - using your wheel image */}
-        <div 
+        <div
           className="absolute inset-0 rounded-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url('/wheel-background.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
         ></div>
 
@@ -250,23 +344,34 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
           {/* Match 3 Header */}
           <div className="text-center mb-2 md:mb-3">
             <div className="flex items-center justify-center mb-1">
-              <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl mr-2" style={{ 
-                ...wayComeFontStyle,
-                textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-              }}>
+              <span
+                className="text-white font-bold text-xl md:text-2xl lg:text-3xl mr-2"
+                style={{
+                  ...wayComeFontStyle,
+                  textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                }}
+              >
                 MATCH
               </span>
               <div className="bg-yellow-400 rounded-full w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center">
-                <span className="text-white font-bold text-lg md:text-xl lg:text-2xl" style={{ 
-                  ...wayComeFontStyle,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-                }}>3</span>
+                <span
+                  className="text-white font-bold text-lg md:text-xl lg:text-2xl"
+                  style={{
+                    ...wayComeFontStyle,
+                    textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+                  }}
+                >
+                  3
+                </span>
               </div>
             </div>
-            <p className="text-white font-bold text-sm md:text-lg lg:text-xl" style={{ 
-              ...wayComeFontStyle,
-              textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
-            }}>
+            <p
+              className="text-white font-bold text-sm md:text-lg lg:text-xl"
+              style={{
+                ...wayComeFontStyle,
+                textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+              }}
+            >
               & YOU WIN!
             </p>
           </div>
@@ -281,28 +386,45 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
               >
                 {scratchedCells[index] ? (
                   <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
-                    <div className="text-center leading-tight w-full h-full flex flex-col justify-center" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <div
+                      className="text-center leading-tight w-full h-full flex flex-col justify-center"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
                       {card.isWinner ? (
                         // Winner card shows same prize
                         <>
-                          <div className="text-xs font-bold leading-tight">Dishwasher</div>
+                          <div className="text-xs font-bold leading-tight">
+                            Dishwasher
+                          </div>
                           <div className="text-xs leading-tight">New Water</div>
-                          <div className="text-xs leading-tight">Valve Install</div>
-                          <div className="text-xs font-bold">{card.prizeValues[index]}</div>
+                          <div className="text-xs leading-tight">
+                            Valve Install
+                          </div>
+                          <div className="text-xs font-bold">
+                            {card.prizeValues[index]}
+                          </div>
                         </>
                       ) : (
                         // Non-winner card shows different prizes
                         <>
                           <div className="text-xs font-bold leading-tight">
-                            {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")}
                           </div>
                           <div className="text-xs leading-tight">
-                            {card.prizes[index].split(' ').slice(2, 4).join(' ')}
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(2, 4)
+                              .join(" ")}
                           </div>
                           <div className="text-xs leading-tight">
-                            {card.prizes[index].split(' ').slice(4).join(' ')}
+                            {card.prizes[index].split(" ").slice(4).join(" ")}
                           </div>
-                          <div className="text-xs font-bold">{card.prizeValues[index]}</div>
+                          <div className="text-xs font-bold">
+                            {card.prizeValues[index]}
+                          </div>
                         </>
                       )}
                     </div>
@@ -315,8 +437,15 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
           </div>
 
           {/* Play Now Button */}
-          <div className="bg-yellow-400 text-black font-bold py-2 px-4 md:px-6 rounded text-sm md:text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            {isFullyScratched ? (card.isWinner ? 'WINNER!' : 'TRY AGAIN') : 'PLAY NOW'}
+          <div
+            className="bg-yellow-400 text-black font-bold py-2 px-4 md:px-6 rounded text-sm md:text-lg"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
+            {isFullyScratched
+              ? card.isWinner
+                ? "WINNER!"
+                : "TRY AGAIN"
+              : "PLAY NOW"}
           </div>
         </div>
       </div>
