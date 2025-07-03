@@ -3,10 +3,30 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { User, Phone, Mail, Gamepad2, Video, CheckCircle, Lock, Unlock, Sparkles, Trophy, Gift } from "lucide-react";
+import { useLocation } from "wouter";
+import {
+  User,
+  Phone,
+  Mail,
+  Gamepad2,
+  Video,
+  CheckCircle,
+  Lock,
+  Unlock,
+  Sparkles,
+  Trophy,
+  Gift,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -23,10 +43,13 @@ interface RegistrationFormProps {
   videoWatched: boolean;
 }
 
-export default function RegistrationForm({ videoWatched }: RegistrationFormProps) {
+export default function RegistrationForm({
+  videoWatched,
+}: RegistrationFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+  const [, setLocation] = useLocation();
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +75,10 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
       });
       queryClient.invalidateQueries({ queryKey: ["/api/stats"] });
       form.reset();
-      // TODO: Redirect to game page
+      // Redirect to game page after a short delay
+      setTimeout(() => {
+        setLocation("/game");
+      }, 1500);
     },
     onError: (error: any) => {
       toast({
@@ -76,11 +102,11 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
   };
 
   const formatPhoneNumber = (value: string) => {
-    const cleaned = value.replace(/\D/g, '');
+    const cleaned = value.replace(/\D/g, "");
     if (cleaned.length >= 6) {
-      return `(${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6,10)}`;
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
     } else if (cleaned.length >= 3) {
-      return `(${cleaned.slice(0,3)}) ${cleaned.slice(3)}`;
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
     }
     return cleaned;
   };
@@ -93,188 +119,227 @@ export default function RegistrationForm({ videoWatched }: RegistrationFormProps
         <div className="absolute bottom-20 right-10 w-32 h-32 bg-[#2C5CDC] rounded-full opacity-5"></div>
         <div className="absolute top-1/2 left-20 w-16 h-16 bg-yellow-300 rounded-full opacity-5"></div>
       </div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-block p-4 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-full mb-8 shadow-xl">
               <Trophy className="text-white" size={40} />
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-[#2C5CDC] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h2
+              className="text-3xl md:text-4xl font-black text-[#2C5CDC] mb-4"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
               Ready to Play?
             </h2>
-            <p className="text-lg text-gray-600 mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p
+              className="text-lg text-gray-600 mb-6"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
               Enter your details below to unlock the scratch & win game!
             </p>
-            
+
             {/* Video Watch Status */}
-            <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full mb-6 ${
-              videoWatched 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-red-100 text-red-700'
-            }`}>
-              {videoWatched ? <CheckCircle size={20} /> : <Video size={20} />}
-              <span className="font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {videoWatched 
-                  ? "Video complete! You can now register" 
-                  : "Please watch the video first to unlock registration"
-                }
+            <div
+              className={`inline-flex items-center space-x-2 px-3 md:px-4 py-2 rounded-full mb-6 ${
+                videoWatched
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {videoWatched ? <CheckCircle size={18} className="flex-shrink-0" /> : <Video size={18} className="flex-shrink-0" />}
+              <span
+                className="font-semibold text-sm md:text-base text-center"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                {videoWatched
+                  ? "Video complete! You can now register"
+                  : "Please watch the video first to unlock registration"}
               </span>
             </div>
           </div>
-          
+
           {/* Registration Form */}
           <div className="bg-gradient-to-br from-[#2C5CDC] to-[#F76D46] rounded-2xl shadow-2xl p-2">
             <div className="bg-white rounded-xl p-8 shadow-inner relative">
               {/* Play Now badge */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] text-white px-6 py-2 rounded-full shadow-lg">
-                <span className="text-sm font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>Play Now</span>
+                <span
+                  className="text-sm font-bold"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  Play Now
+                </span>
               </div>
-              
+
               {/* Subtle corner accents */}
               <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-bl from-[#F76D46]/10 to-transparent rounded-full"></div>
               <div className="absolute bottom-4 left-4 w-6 h-6 bg-gradient-to-tr from-[#2C5CDC]/10 to-transparent rounded-full"></div>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Name Field */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center text-sm font-bold text-[#2C5CDC]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        <User className="mr-2 text-[#F76D46]" size={16} />
-                        Full Name
-                      </FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={!videoWatched}
-                            placeholder="Enter your full name"
-                            className={`pr-10 ${!videoWatched ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}
-                            style={{ fontFamily: 'Montserrat, sans-serif' }}
-                          />
-                        </FormControl>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          {videoWatched ? 
-                            <Unlock className="text-green-500" size={16} /> : 
-                            <Lock className="text-gray-400" size={16} />
-                          }
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  {/* Name Field */}
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel
+                          className="flex items-center text-sm font-bold text-[#2C5CDC]"
+                          style={{ fontFamily: "Montserrat, sans-serif" }}
+                        >
+                          <User className="mr-2 text-[#F76D46]" size={16} />
+                          Full Name
+                        </FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={!videoWatched}
+                              placeholder="Enter your full name"
+                              className={`pr-10 ${!videoWatched ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
+                              style={{ fontFamily: "Montserrat, sans-serif" }}
+                            />
+                          </FormControl>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            {videoWatched ? (
+                              <Unlock className="text-green-500" size={16} />
+                            ) : (
+                              <Lock className="text-gray-400" size={16} />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Phone Field */}
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center text-sm font-bold text-[#2C5CDC]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        <Phone className="mr-2 text-[#F76D46]" size={16} />
-                        Phone Number
-                      </FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={!videoWatched}
-                            placeholder="(310) 295-6355"
-                            onChange={(e) => {
-                              const formatted = formatPhoneNumber(e.target.value);
-                              field.onChange(formatted);
-                            }}
-                            className={`pr-10 ${!videoWatched ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}
-                            style={{ fontFamily: 'Montserrat, sans-serif' }}
-                          />
-                        </FormControl>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          {videoWatched ? 
-                            <Unlock className="text-green-500" size={16} /> : 
-                            <Lock className="text-gray-400" size={16} />
-                          }
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Phone Field */}
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel
+                          className="flex items-center text-sm font-bold text-[#2C5CDC]"
+                          style={{ fontFamily: "Montserrat, sans-serif" }}
+                        >
+                          <Phone className="mr-2 text-[#F76D46]" size={16} />
+                          Phone Number
+                        </FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              {...field}
+                              disabled={!videoWatched}
+                              placeholder="(310) 295-6355"
+                              onChange={(e) => {
+                                const formatted = formatPhoneNumber(
+                                  e.target.value,
+                                );
+                                field.onChange(formatted);
+                              }}
+                              className={`pr-10 ${!videoWatched ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
+                              style={{ fontFamily: "Montserrat, sans-serif" }}
+                            />
+                          </FormControl>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            {videoWatched ? (
+                              <Unlock className="text-green-500" size={16} />
+                            ) : (
+                              <Lock className="text-gray-400" size={16} />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Email Field */}
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center text-sm font-bold text-[#2C5CDC]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        <Mail className="mr-2 text-[#F76D46]" size={16} />
-                        Email Address
-                      </FormLabel>
-                      <div className="relative">
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="email"
-                            disabled={!videoWatched}
-                            placeholder="your.email@example.com"
-                            className={`pr-10 ${!videoWatched ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}
-                            style={{ fontFamily: 'Montserrat, sans-serif' }}
-                          />
-                        </FormControl>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          {videoWatched ? 
-                            <Unlock className="text-green-500" size={16} /> : 
-                            <Lock className="text-gray-400" size={16} />
-                          }
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Email Field */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel
+                          className="flex items-center text-sm font-bold text-[#2C5CDC]"
+                          style={{ fontFamily: "Montserrat, sans-serif" }}
+                        >
+                          <Mail className="mr-2 text-[#F76D46]" size={16} />
+                          Email Address
+                        </FormLabel>
+                        <div className="relative">
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              disabled={!videoWatched}
+                              placeholder="your.email@example.com"
+                              className={`pr-10 ${!videoWatched ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
+                              style={{ fontFamily: "Montserrat, sans-serif" }}
+                            />
+                          </FormControl>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            {videoWatched ? (
+                              <Unlock className="text-green-500" size={16} />
+                            ) : (
+                              <Lock className="text-gray-400" size={16} />
+                            )}
+                          </div>
                         </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submit Button */}
+                  <div className="relative">
+                    {videoWatched && (
+                      <div className="absolute -inset-1 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-lg blur opacity-30"></div>
+                    )}
+                    <Button
+                      type="submit"
+                      disabled={!videoWatched || registerMutation.isPending}
+                      className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-6 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
+                        !videoWatched
+                          ? "from-gray-400 to-gray-500 cursor-not-allowed transform-none"
+                          : "hover:shadow-xl"
+                      }`}
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      <div className="flex items-center justify-center space-x-2 md:space-x-3">
+                        <Video size={18} className="md:w-6 md:h-6 flex-shrink-0" />
+                        <span className="font-black text-sm md:text-lg lg:text-xl text-center leading-tight px-1">
+                          {registerMutation.isPending
+                            ? "REGISTERING..."
+                            : videoWatched
+                              ? "REGISTER TO PLAY"
+                              : "WATCH VIDEO TO UNLOCK"}
+                        </span>
+                        <Trophy size={18} className="md:w-6 md:h-6 flex-shrink-0" />
                       </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Submit Button */}
-                <div className="relative">
-                  {videoWatched && (
-                    <div className="absolute -inset-1 bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] rounded-lg blur opacity-30"></div>
-                  )}
-                  <Button
-                    type="submit"
-                    disabled={!videoWatched || registerMutation.isPending}
-                    className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-6 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
-                      !videoWatched ? 'from-gray-400 to-gray-500 cursor-not-allowed transform-none' : 'hover:shadow-xl'
-                    }`}
-                    style={{ fontFamily: 'Montserrat, sans-serif' }}
-                  >
-                    <div className="flex items-center justify-center space-x-3">
-                      <Trophy size={24} />
-                      <span className="font-black text-xl">
-                        {registerMutation.isPending 
-                          ? "REGISTERING..." 
-                          : videoWatched 
-                            ? "ACCESS PREMIUM GAME NOW" 
-                            : "COMPLETE VIDEO TO UNLOCK"
-                        }
-                      </span>
-                      <Trophy size={24} />
-                    </div>
-                  </Button>
-                </div>
-                
-                {/* Terms & Conditions */}
-                <div className="text-center text-sm text-gray-600 mt-4">
-                  <p style={{ fontFamily: 'Montserrat, sans-serif' }}>By registering, you agree to our 
-                    <a href="#" className="text-[#2C5CDC] hover:underline"> Terms & Conditions</a> 
-                    {' '}and{' '}
-                    <a href="#" className="text-[#2C5CDC] hover:underline">Privacy Policy</a>
-                  </p>
-                </div>
-              </form>
-            </Form>
+                    </Button>
+                  </div>
+
+                  {/* Terms & Conditions */}
+                  <div className="text-center text-sm text-gray-600 mt-4">
+                    <p style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      By registering, you agree to our
+                      <a href="#" className="text-[#2C5CDC] hover:underline">
+                        {" "}
+                        Terms & Conditions
+                      </a>{" "}
+                      and{" "}
+                      <a href="#" className="text-[#2C5CDC] hover:underline">
+                        Privacy Policy
+                      </a>
+                    </p>
+                  </div>
+                </form>
+              </Form>
             </div>
           </div>
         </div>
