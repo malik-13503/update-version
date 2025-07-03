@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import ScratchCard from "@/components/ScratchCard";
 
-interface ScratchCard {
+interface GameCard {
   id: number;
   isWinner: boolean;
-  scratches: boolean[];
+  isUnlocked: boolean;
+  isCompleted: boolean;
   prizes: string[];
   prizeValues: string[];
 }
@@ -38,11 +40,12 @@ export default function Game() {
     }
   }
   const [, setLocation] = useLocation();
-  const [cards, setCards] = useState<ScratchCard[]>([
+  const [cards, setCards] = useState<GameCard[]>([
     {
       id: 1,
       isWinner: false,
-      scratches: new Array(9).fill(false),
+      isUnlocked: true,
+      isCompleted: false,
       prizes: [
         "Free Standing Refrigerator",
         "Master Bathroom Sink",
@@ -69,7 +72,8 @@ export default function Game() {
     {
       id: 2,
       isWinner: true,
-      scratches: new Array(9).fill(false),
+      isUnlocked: false,
+      isCompleted: false,
       prizes: [
         "Dishwasher New Water Valve Installation",
         "Dishwasher New Water Valve Installation",
@@ -95,29 +99,35 @@ export default function Game() {
     },
   ]);
   const [gameComplete, setGameComplete] = useState(false);
+  const [winner, setWinner] = useState<GameCard | null>(null);
 
-  const handleScratch = (cardId: number, index: number) => {
+  const handleCardComplete = (cardId: number) => {
     setCards((prev) =>
       prev.map((card) => {
         if (card.id === cardId) {
-          const newScratches = [...card.scratches];
-          newScratches[index] = true;
-          return { ...card, scratches: newScratches };
+          const updatedCard = { ...card, isCompleted: true };
+          
+          // Check if this is a winning card
+          if (card.isWinner) {
+            setWinner(updatedCard);
+            setTimeout(() => setGameComplete(true), 500);
+          }
+          
+          return updatedCard;
         }
         return card;
       }),
     );
 
-    // Check if all cards are fully scratched
-    const allFullyScratched = cards.every((card) =>
-      card.id === cardId
-        ? card.scratches.every((_, i) => i === index || card.scratches[i])
-        : card.scratches.every((scratch) => scratch),
+    // Unlock the next card
+    setCards((prev) =>
+      prev.map((card) => {
+        if (card.id === cardId + 1) {
+          return { ...card, isUnlocked: true };
+        }
+        return card;
+      }),
     );
-
-    if (allFullyScratched) {
-      setTimeout(() => setGameComplete(true), 1000);
-    }
   };
 
   const resetGame = () => {
