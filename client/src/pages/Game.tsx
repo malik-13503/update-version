@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RotateCcw } from "lucide-react";
-import ScratchCard from "@/components/ScratchCard";
 
 interface ScratchCard {
   id: number;
@@ -154,26 +152,7 @@ export default function Game() {
         </div>
       </div>
 
-      {/* Navigation and Controls */}
-      <div className="fixed bottom-4 left-4 right-4 flex justify-between items-center">
-        <Button
-          onClick={() => setLocation("/")}
-          variant="outline"
-          className="flex items-center space-x-2 bg-white"
-        >
-          <ArrowLeft size={20} />
-          <span>Back to Home</span>
-        </Button>
-        
-        <Button
-          onClick={resetGame}
-          variant="outline"
-          className="flex items-center space-x-2 bg-white"
-        >
-          <RotateCcw size={20} />
-          <span>Reset Game</span>
-        </Button>
-      </div>
+
 
       {/* Winner Modal */}
       {gameComplete && (
@@ -267,32 +246,40 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
             {Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={index}
-                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative"
+                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative cursor-pointer"
+                onClick={() => handleCellScratch(index)}
               >
-                <ScratchCard
-                  width={60}
-                  height={60}
-                  scratchPercent={25}
-                  onScratchComplete={() => handleCellScratch(index)}
-                  isScratched={scratchedCells[index]}
-                >
+                {scratchedCells[index] ? (
                   <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
                     <div className="text-center leading-tight w-full h-full flex flex-col justify-center" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                      <div className="text-xs font-bold leading-tight">
-                        {card.prizes[index].split(' ').slice(0, 2).join(' ')}
-                      </div>
-                      <div className="text-xs leading-tight">
-                        {card.prizes[index].split(' ').slice(2, 4).join(' ')}
-                      </div>
-                      <div className="text-xs leading-tight">
-                        {card.prizes[index].split(' ').slice(4).join(' ')}
-                      </div>
-                      <div className="text-xs font-bold">
-                        {card.prizeValues[index]}
-                      </div>
+                      {card.isWinner ? (
+                        // Winner card shows same prize
+                        <>
+                          <div className="text-xs font-bold leading-tight">Dishwasher</div>
+                          <div className="text-xs leading-tight">New Water</div>
+                          <div className="text-xs leading-tight">Valve Install</div>
+                          <div className="text-xs font-bold">{card.prizeValues[index]}</div>
+                        </>
+                      ) : (
+                        // Non-winner card shows different prizes
+                        <>
+                          <div className="text-xs font-bold leading-tight">
+                            {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                          </div>
+                          <div className="text-xs leading-tight">
+                            {card.prizes[index].split(' ').slice(2, 4).join(' ')}
+                          </div>
+                          <div className="text-xs leading-tight">
+                            {card.prizes[index].split(' ').slice(4).join(' ')}
+                          </div>
+                          <div className="text-xs font-bold">{card.prizeValues[index]}</div>
+                        </>
+                      )}
                     </div>
                   </div>
-                </ScratchCard>
+                ) : (
+                  <div className="w-full h-full bg-gray-800 hover:bg-gray-700 transition-colors"></div>
+                )}
               </div>
             ))}
           </div>
