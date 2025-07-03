@@ -10,52 +10,55 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
   const [progress, setProgress] = useState(0);
   const [showComplete, setShowComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   const handlePlay = () => {
     setIsLoading(true);
     setIsPlaying(true);
-    if (videoRef.current) {
-      videoRef.current.play()
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setIsLoading(false);
-        });
-    }
+    setIsLoading(false);
+    
+    // Start progress simulation for YouTube video
+    // Since we can't directly track YouTube video progress, we'll simulate it
+    startProgressSimulation();
   };
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const updateProgress = () => {
-      const currentProgress = (video.currentTime / video.duration) * 100;
+  const startProgressSimulation = () => {
+    let currentProgress = 0;
+    const duration = 120; // Assume 2 minutes video duration
+    const interval = 1000; // Update every second
+    
+    progressInterval.current = setInterval(() => {
+      currentProgress += (100 / duration);
       setProgress(currentProgress);
-
+      
       // Enable form when video is 80% complete
-      if (currentProgress >= 80) {
+      if (currentProgress >= 80 && !showComplete) {
         onVideoComplete();
         setShowComplete(true);
         setTimeout(() => setShowComplete(false), 3000);
       }
-    };
+      
+      // Stop at 100%
+      if (currentProgress >= 100) {
+        if (progressInterval.current) {
+          clearInterval(progressInterval.current);
+        }
+        if (!showComplete) {
+          onVideoComplete();
+          setShowComplete(true);
+          setTimeout(() => setShowComplete(false), 3000);
+        }
+      }
+    }, interval);
+  };
 
-    const handleEnded = () => {
-      onVideoComplete();
-      setShowComplete(true);
-      setTimeout(() => setShowComplete(false), 3000);
-    };
-
-    video.addEventListener('timeupdate', updateProgress);
-    video.addEventListener('ended', handleEnded);
-
+  useEffect(() => {
     return () => {
-      video.removeEventListener('timeupdate', updateProgress);
-      video.removeEventListener('ended', handleEnded);
+      if (progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
     };
-  }, [onVideoComplete]);
+  }, []);
 
   return (
     <section className="bg-white py-12">
@@ -72,19 +75,15 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
           {/* Video Player */}
           <div className="relative bg-gray-900 rounded-b-lg shadow-2xl overflow-hidden">
             <div className="aspect-video relative">
-              {/* Video preview with play button */}
+              {/* YouTube video preview with play button */}
               {!isPlaying && (
                 <div className="w-full h-full relative">
-                  {/* Video thumbnail */}
-                  <video 
+                  {/* YouTube thumbnail */}
+                  <img 
+                    src="https://img.youtube.com/vi/Lh6cT8kCo64/maxresdefault.jpg"
+                    alt="Video thumbnail"
                     className="w-full h-full object-cover"
-                    preload="metadata"
-                    muted
-                    playsInline
-                    poster=""
-                  >
-                    <source src="/videos/d4u-scratch-win-video.mp4#t=5" type="video/mp4" />
-                  </video>
+                  />
                   
                   {/* Dark overlay for better button visibility */}
                   <div className="absolute inset-0 bg-black bg-opacity-30"></div>
@@ -106,18 +105,17 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
                 </div>
               )}
               
-              {/* Actual video element */}
-              <video 
-                ref={videoRef}
-                className={`w-full h-full object-cover ${!isPlaying ? 'hidden' : ''}`}
-                controls
-                preload="metadata"
-                playsInline
-                onPlay={() => setIsPlaying(true)}
-              >
-                <source src="/videos/d4u-scratch-win-video.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              {/* YouTube iframe */}
+              {isPlaying && (
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/Lh6cT8kCo64?autoplay=1&rel=0&modestbranding=1"
+                  title="D4U Pros Scratch & Win Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              )}
               
               {/* Video Progress Indicator */}
               <div 

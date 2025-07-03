@@ -82,6 +82,9 @@ The application follows a monorepo structure with separate client and server dir
 - June 30, 2025. Updated form design with gradient border container
 - June 30, 2025. Updated footer to match reference design with light background
 - June 30, 2025. Added user's video file to video section
+- July 3, 2025. Replaced local video with YouTube embed (https://youtu.be/Lh6cT8kCo64) for faster loading
+- July 3, 2025. Updated video section to use YouTube thumbnail preview and iframe embed
+- July 3, 2025. Added automatic redirect from registration form to game page after submission
 
 ## User Preferences
 
