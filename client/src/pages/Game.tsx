@@ -11,6 +11,32 @@ interface ScratchCard {
 }
 
 export default function Game() {
+  // Add custom font style for game page
+  const wayComeFontStyle = {
+    fontFamily: 'WayCome, sans-serif',
+    fontWeight: 'bold'
+  };
+
+  // Add font face to the page
+  const fontFaceCSS = `
+    @font-face {
+      font-family: 'WayCome';
+      src: url('/WayCome.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+  `;
+
+  // Inject CSS
+  if (typeof document !== 'undefined') {
+    const existingStyle = document.getElementById('way-come-font');
+    if (!existingStyle) {
+      const style = document.createElement('style');
+      style.id = 'way-come-font';
+      style.textContent = fontFaceCSS;
+      document.head.appendChild(style);
+    }
+  }
   const [, setLocation] = useLocation();
   const [cards, setCards] = useState<ScratchCard[]>([
     { 
@@ -105,7 +131,7 @@ export default function Game() {
               className="h-12 md:h-16 w-auto"
             />
           </div>
-          <div className="text-white font-bold text-xl md:text-3xl" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <div className="text-white font-bold text-xl md:text-3xl" style={wayComeFontStyle}>
             <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
             <span className="text-black ml-2 text-lg md:text-xl">INSTANT PRIZES</span>
           </div>
@@ -115,10 +141,10 @@ export default function Game() {
       {/* Game Title Section */}
       <div className="bg-white py-8 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-7xl font-bold text-orange-500 mb-2 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <h1 className="text-3xl md:text-5xl font-bold text-orange-500 mb-2 leading-tight" style={wayComeFontStyle}>
             IT'S TIME TO PLAY OUR SCRATCH &<br/>WIN GAME
           </h1>
-          <h2 className="text-3xl md:text-5xl font-bold text-blue-600 mt-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <h2 className="text-2xl md:text-4xl font-bold text-blue-600 mt-4" style={wayComeFontStyle}>
             2 CHANCES TO WIN AMAZING PRIZES!
           </h2>
         </div>
@@ -221,20 +247,20 @@ function ScratchOffCard({ card, onScratch, isFullyScratched }: ScratchOffCardPro
           <div className="text-center mb-2 md:mb-3">
             <div className="flex items-center justify-center mb-1">
               <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl mr-2" style={{ 
-                fontFamily: 'Montserrat, sans-serif',
+                ...wayComeFontStyle,
                 textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
               }}>
                 MATCH
               </span>
               <div className="bg-yellow-400 rounded-full w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center">
                 <span className="text-white font-bold text-lg md:text-xl lg:text-2xl" style={{ 
-                  fontFamily: 'Montserrat, sans-serif',
+                  ...wayComeFontStyle,
                   textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
                 }}>3</span>
               </div>
             </div>
             <p className="text-white font-bold text-sm md:text-lg lg:text-xl" style={{ 
-              fontFamily: 'Montserrat, sans-serif',
+              ...wayComeFontStyle,
               textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
             }}>
               & YOU WIN!
