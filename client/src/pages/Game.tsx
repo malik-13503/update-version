@@ -186,24 +186,24 @@ export default function Game() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header Section - Exact match to your design */}
-      <div className="px-4 py-4" style={{ backgroundColor: "#ffb22a" }}>
+      {/* Header Section - Responsive design */}
+      <div className="px-4 py-3" style={{ backgroundColor: "#ffb22a" }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center">
             <div className="bg-white p-2 rounded-lg">
               <img
                 src="/logo.png"
                 alt="Done For You Pros"
-                className="h-16 md:h-20 w-auto"
+                className="h-10 md:h-12 w-auto max-w-[100px] md:max-w-[140px]"
               />
             </div>
           </div>
           <div
-            className="text-white font-bold text-xl md:text-3xl"
+            className="text-white font-bold flex flex-col md:flex-row items-center md:items-baseline"
             style={wayComeFontStyle}
           >
-            <span className="text-white text-2xl md:text-4xl">$5 MILLION</span>
-            <span className="text-black ml-2 text-lg md:text-xl">
+            <span className="text-white text-lg md:text-3xl lg:text-4xl">$5 MILLION</span>
+            <span className="text-black text-sm md:text-xl lg:text-2xl md:ml-2">
               INSTANT PRIZES
             </span>
           </div>

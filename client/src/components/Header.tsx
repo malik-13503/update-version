@@ -4,14 +4,14 @@ import logoImage from "@assets/logo_1751279296203.png";
 export default function Header() {
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           {/* Logo Section */}
           <div className="flex items-center">
             <img
               src={logoImage}
               alt="Done For You Pros"
-              className="h-12 md:h-16 w-auto object-contain"
+              className="h-8 md:h-10 w-auto object-contain max-w-[120px] md:max-w-[160px]"
             />
           </div>
 
@@ -28,9 +28,9 @@ export default function Header() {
             </div>
             <a
               href="tel:3102956355"
-              className="md:hidden bg-[#F76D46] text-white rounded-full p-3 hover:bg-[#2C5CDC] transition-colors"
+              className="md:hidden bg-[#F76D46] text-white rounded-full p-2 hover:bg-[#2C5CDC] transition-colors"
             >
-              <Phone size={20} />
+              <Phone size={18} />
             </a>
           </div>
         </div>
