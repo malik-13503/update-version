@@ -101,13 +101,15 @@ export default function Game() {
   ]);
   const [gameComplete, setGameComplete] = useState(false);
   const [winnerCard, setWinnerCard] = useState<ScratchCardData | null>(null);
+  const [firstCardComplete, setFirstCardComplete] = useState(false);
 
-  // Confetti component
+  // Confetti component with brand colors
   const Confetti = () => {
-    const confettiPieces = Array.from({ length: 100 }, (_, i) => {
-      const colors = ['#2C5CDC', '#F76D46', '#FFD700', '#FF6B6B', '#4ECDC4'];
+    const confettiPieces = Array.from({ length: 80 }, (_, i) => {
+      // Use only brand colors
+      const colors = ['#2C5CDC', '#F76D46', '#ffb22a'];
       const color = colors[Math.floor(Math.random() * colors.length)];
-      const size = Math.random() * 10 + 5;
+      const size = Math.random() * 12 + 6;
       const leftPos = Math.random() * 100;
       const animationDelay = Math.random() * 3;
       const animationDuration = 3 + Math.random() * 2;
@@ -115,14 +117,14 @@ export default function Game() {
       return (
         <div
           key={i}
-          className="absolute animate-bounce"
+          className="absolute"
           style={{
             left: `${leftPos}%`,
             top: '-20px',
             backgroundColor: color,
             width: `${size}px`,
             height: `${size}px`,
-            borderRadius: Math.random() > 0.5 ? '50%' : '0%',
+            borderRadius: Math.random() > 0.7 ? '50%' : '0%',
             animationDelay: `${animationDelay}s`,
             animationDuration: `${animationDuration}s`,
             transform: `rotate(${Math.random() * 360}deg)`,
@@ -154,6 +156,11 @@ export default function Game() {
 
 
   const handleScratch = (cardId: number, index: number) => {
+    // Prevent scratching second card until first card is complete
+    if (cardId === 2 && !firstCardComplete) {
+      return;
+    }
+    
     setCards((prev) =>
       prev.map((card) => {
         if (card.id === cardId) {
@@ -170,6 +177,11 @@ export default function Game() {
     if (updatedCard) {
       const cardFullyScratched = updatedCard.scratches.every((_, i) => i === index || updatedCard.scratches[i]);
       
+      // If it's the first card and it's fully scratched
+      if (cardId === 1 && cardFullyScratched) {
+        setFirstCardComplete(true);
+      }
+      
       // If it's the second card (winner card) and it's fully scratched
       if (cardId === 2 && cardFullyScratched) {
         // Check for three matching "Dishwasher" prizes
@@ -183,11 +195,8 @@ export default function Game() {
           setTimeout(() => setGameComplete(true), 1000);
           // Stop confetti after 5 seconds
           setTimeout(() => setShowConfetti(false), 5000);
-        }
-      } else if (cardId === 1 && cardFullyScratched) {
-        // First card is not a winner, check if both cards are done
-        const bothCardsDone = cards.every(card => isCardFullyScratched(card));
-        if (bothCardsDone) {
+        } else {
+          // Second card complete but not a winner
           setTimeout(() => setGameComplete(true), 1000);
         }
       }
@@ -202,69 +211,21 @@ export default function Game() {
     }
   };
 
-  const resetGame = () => {
-    setCards([
-      {
-        id: 1,
-        isWinner: false,
-        scratches: new Array(9).fill(false),
-        prizes: [
-          "Free Standing Refrigerator New Water Line Installation",
-          "Master Bathroom Sink New Hot Water Valve & Line Installation", 
-          "Washer New Hot & Cold Water Lines Installation",
-          "Dishwasher New Water Valve Installation",
-          "Kitchen Sink New Hot Water Valve & Line Installation",
-          "Cooktop, Range, or Stove New Gas Line Installation",
-          "Garbage Disposal New Drain Hose Installation",
-          "Dishwasher New Air Cap Installation",
-          "Master Bathroom Sink New Cold Water Valve & Line Installation",
-        ],
-        prizeValues: [
-          "$197value",
-          "$397value", 
-          "$247value",
-          "$197value",
-          "$397value",
-          "$197value",
-          "$147value",
-          "$197value",
-          "$397value",
-        ],
-      },
-      {
-        id: 2,
-        isWinner: true,
-        scratches: new Array(9).fill(false),
-        prizes: [
-          "Gas Dryer New Gas Line Installation",
-          "Dishwasher New Water Valve Installation", 
-          "Dishwasher New Water Valve Installation",
-          "Master Bathroom Sink New Hot Water Valve & Line Installation",
-          "Over The Range Microwave & Hood Venting Retaped Pro Style",
-          "Dishwasher New Water Valve Installation",
-          "Kitchen Sink New Cold Water Valve & Line Installation",
-          "Washer New Hot & Cold Water Lines Installation",
-          "Free Standing Refrigerator New Water Line Installation",
-        ],
-        prizeValues: [
-          "$247value",
-          "$197value",
-          "$197value",
-          "$397value",
-          "$147value",
-          "$197value",
-          "$397value",
-          "$247value",
-          "$197value",
-        ],
-      },
-    ]);
-    setGameComplete(false);
-    setWinnerCard(null);
-  };
+
 
   const isCardFullyScratched = (card: ScratchCardData) => {
     return card.scratches.every((scratch) => scratch);
+  };
+
+  const resetGame = () => {
+    setCards(prev => prev.map(card => ({
+      ...card,
+      scratches: new Array(9).fill(false)
+    })));
+    setGameComplete(false);
+    setWinnerCard(null);
+    setFirstCardComplete(false);
+    setShowConfetti(false);
   };
 
   return (
@@ -377,13 +338,25 @@ export default function Game() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
             {cards.map((card) => (
-              <ScratchOffCard
-                key={card.id}
-                card={card}
-                onScratch={handleScratch}
-                onScratchComplete={() => handleCardScratchComplete(card.id)}
-                isFullyScratched={isCardFullyScratched(card)}
-              />
+              <div key={card.id} className="relative">
+                {card.id === 2 && !firstCardComplete && (
+                  <div className="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+                    <div className="text-center text-white p-4">
+                      <div className="text-4xl mb-2">🔒</div>
+                      <p className="text-lg font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Complete Card 1 First!
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <ScratchOffCard
+                  key={card.id}
+                  card={card}
+                  onScratch={handleScratch}
+                  onScratchComplete={() => handleCardScratchComplete(card.id)}
+                  isFullyScratched={isCardFullyScratched(card)}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -409,54 +382,54 @@ export default function Game() {
 
       {/* Winner Modal */}
       {gameComplete && winnerCard && (
-        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-4 rounded-3xl max-w-lg w-full mx-4 shadow-2xl">
-            <div className="bg-white rounded-2xl p-6 text-center relative overflow-hidden">
+        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-2 sm:p-4 rounded-3xl max-w-sm sm:max-w-md md:max-w-lg w-full mx-2 sm:mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl p-3 sm:p-6 text-center relative overflow-hidden">
               
               <div className="relative z-10">
                 {/* Trophy and celebration */}
-                <div className="text-6xl mb-4 animate-bounce">🏆</div>
-                <div className="text-4xl mb-4">🎉 🎊 🎉</div>
+                <div className="text-4xl sm:text-6xl mb-2 sm:mb-4 animate-bounce">🏆</div>
+                <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">🎉 🎊 🎉</div>
                 
-                <h3 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
+                <h3 className="text-3xl sm:text-5xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
                   WINNER!
                 </h3>
                 
-                <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl mb-6 shadow-inner border-2 border-green-200">
-                  <h4 className="text-2xl font-bold mb-3 text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-inner border-2 border-green-200">
+                  <h4 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     🎁 CONGRATULATIONS!
                   </h4>
-                  <p className="text-xl font-semibold text-blue-600 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-sm sm:text-xl font-semibold text-blue-600 mb-1 sm:mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     You matched 3 "Dishwasher New Water Valve Installation" prizes!
                   </p>
-                  <p className="text-3xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-xl sm:text-3xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     TOTAL VALUE: $591
                   </p>
                 </div>
                 
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-xl mb-6 shadow-lg">
-                  <h4 className="text-2xl font-bold mb-3" style={wayComeFontStyle}>
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-lg">
+                  <h4 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3" style={wayComeFontStyle}>
                     🔥 CLAIM YOUR PRIZE NOW!
                   </h4>
-                  <p className="text-lg mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-sm sm:text-lg mb-2 sm:mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     Call Done For You Pros immediately to schedule your FREE professional installation:
                   </p>
                   <a 
                     href="tel:+1234567890" 
-                    className="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-xl text-2xl transform transition-all duration-200 hover:scale-105 shadow-lg"
+                    className="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-2 sm:py-4 px-4 sm:px-8 rounded-xl text-lg sm:text-2xl transform transition-all duration-200 hover:scale-105 shadow-lg"
                     style={wayComeFontStyle}
                   >
                     📞 CALL NOW: (123) 456-7890
                   </a>
-                  <p className="text-sm mt-3 text-blue-100" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-xs sm:text-sm mt-2 sm:mt-3 text-blue-100" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     ⏰ Limited time offer - Call within 24 hours!
                   </p>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                   <Button 
                     onClick={resetGame} 
-                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg text-lg border-2 border-yellow-600"
+                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-lg border-2 border-yellow-600"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     Play Again
@@ -464,7 +437,7 @@ export default function Game() {
                   <Button
                     onClick={() => setLocation("/")}
                     variant="outline"
-                    className="flex-1 border-2 border-gray-400 hover:border-gray-600 text-gray-700 hover:text-gray-900 font-bold py-3 px-6 rounded-lg text-lg"
+                    className="flex-1 border-2 border-gray-400 hover:border-gray-600 text-gray-700 hover:text-gray-900 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-lg"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     Back to Home
