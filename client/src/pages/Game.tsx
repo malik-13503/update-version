@@ -137,7 +137,7 @@ export default function Game() {
     });
     
     return (
-      <div className="fixed inset-0 pointer-events-none z-60">
+      <div className="fixed inset-0 pointer-events-none z-[60]">
         <style>{`
           @keyframes confetti-fall {
             0% {
