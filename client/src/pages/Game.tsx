@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ScratchCard from "@/components/ScratchCard";
-import prizesImage from "@assets/prizes_1751801606346.png";
 
 interface ScratchCardData {
   id: number;
@@ -252,11 +251,15 @@ export default function Game() {
           {!gameStarted ? (
             <div className="text-center">
               <div className="mb-8">
-                <img 
-                  src={prizesImage} 
-                  alt="Prize Wheel" 
-                  className="mx-auto max-w-full h-auto max-h-96"
-                />
+                <h3 
+                  className="text-2xl md:text-3xl font-bold mb-4"
+                  style={{ ...wayComeFontStyle, color: "#2b5bdc" }}
+                >
+                  Ready to Play? Click to Start!
+                </h3>
+                <p className="text-lg text-gray-600 mb-6" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  Scratch off the cards to reveal amazing prizes worth up to $397!
+                </p>
               </div>
               <Button
                 onClick={() => setGameStarted(true)}
@@ -401,6 +404,21 @@ function ScratchOffCard({
     fontWeight: "bold",
   };
 
+  const [scratchedCells, setScratchedCells] = useState<boolean[]>(
+    card.scratches,
+  );
+
+  const handleCellScratch = (index: number) => {
+    const newScratched = [...scratchedCells];
+    newScratched[index] = true;
+    setScratchedCells(newScratched);
+    onScratch(card.id, index);
+  };
+
+  useEffect(() => {
+    setScratchedCells(card.scratches);
+  }, [card.scratches]);
+
   return (
     <div className="flex justify-center">
       <div className="relative w-80 h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px]">
@@ -414,8 +432,8 @@ function ScratchOffCard({
           }}
         ></div>
 
-        {/* Inner content area with scratch functionality */}
-        <div className="absolute inset-4 rounded-full flex flex-col items-center justify-center p-3 md:p-4">
+        {/* Inner content area */}
+        <div className="absolute inset-4  rounded-full flex flex-col items-center justify-center p-3 md:p-4">
           {/* Match 3 Header */}
           <div className="text-center mb-2 md:mb-3">
             <div className="flex items-center justify-center mb-1">
@@ -451,27 +469,63 @@ function ScratchOffCard({
             </p>
           </div>
 
-          {/* Scratch Area */}
-          <div className="w-full max-w-[280px] h-[280px] md:max-w-[320px] md:h-[320px] lg:max-w-[350px] lg:h-[350px]">
-            <ScratchCard
-              width={280}
-              height={280}
-              scratchPercent={30}
-              onScratchComplete={() => {
-                // Mark all scratches as complete
-                const newScratches = new Array(9).fill(true);
-                card.scratches = newScratches;
-                onScratchComplete?.();
-              }}
-            >
-              {/* Prize Grid - what gets revealed */}
-              <div className="w-full h-full bg-white rounded-lg p-2 flex flex-col items-center justify-center">
-                <div className="grid grid-cols-3 gap-1 mb-3">
-                  {Array.from({ length: 9 }).map((_, index) => (
+          {/* Scratch Grid */}
+          <div className="grid grid-cols-3 gap-1 mb-3 md:mb-4">
+            {Array.from({ length: 9 }).map((_, index) => (
+              <div key={index} className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative">
+                {scratchedCells[index] ? (
+                  <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
                     <div
-                      key={index}
-                      className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 border-2 border-yellow-400 bg-yellow-400 text-black flex items-center justify-center p-1"
+                      className="text-center leading-tight w-full h-full flex flex-col justify-center"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
+                      {card.isWinner ? (
+                        // Winner card shows same prize
+                        <>
+                          <div className="text-xs font-bold leading-tight">
+                            Dishwasher
+                          </div>
+                          <div className="text-xs leading-tight">New Water</div>
+                          <div className="text-xs leading-tight">
+                            Valve Install
+                          </div>
+                          <div className="text-xs font-bold">
+                            {card.prizeValues[index]}
+                          </div>
+                        </>
+                      ) : (
+                        // Non-winner card shows different prizes
+                        <>
+                          <div className="text-xs font-bold leading-tight">
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")}
+                          </div>
+                          <div className="text-xs leading-tight">
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(2, 4)
+                              .join(" ")}
+                          </div>
+                          <div className="text-xs leading-tight">
+                            {card.prizes[index].split(" ").slice(4).join(" ")}
+                          </div>
+                          <div className="text-xs font-bold">
+                            {card.prizeValues[index]}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <ScratchCard
+                    width={56} // w-14 = 56px
+                    height={56}
+                    scratchPercent={40}
+                    onScratchComplete={() => handleCellScratch(index)}
+                  >
+                    <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
                       <div
                         className="text-center leading-tight w-full h-full flex flex-col justify-center"
                         style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -515,18 +569,22 @@ function ScratchOffCard({
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-                
-                {/* Status Text */}
-                <div
-                  className="bg-yellow-400 text-black font-bold py-1 px-4 md:px-6 rounded text-sm md:text-lg"
-                  style={{ fontFamily: "Montserrat, sans-serif" }}
-                >
-                  {card.isWinner ? "WINNER!" : "TRY AGAIN"}
-                </div>
+                  </ScratchCard>
+                )}
               </div>
-            </ScratchCard>
+            ))}
+          </div>
+
+          {/* Play Now Button */}
+          <div
+            className="bg-yellow-400 text-black font-bold py-1 px-4 md:px-6 rounded text-sm md:text-lg"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
+            {isFullyScratched
+              ? card.isWinner
+                ? "WINNER!"
+                : "TRY AGAIN"
+              : "SCRATCH TO WIN"}
           </div>
         </div>
       </div>

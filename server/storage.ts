@@ -1,4 +1,4 @@
-import { users, registrations, type User, type InsertUser, type Registration, type InsertRegistration } from "@shared/schema";
+import { users, registrations, type User, type InsertUser, type Registration, type InsertRegistration, type UpdateUserData } from "@shared/schema";
 import { db } from "./db";
 import { eq, count, desc } from "drizzle-orm";
 
@@ -6,11 +6,13 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(insertUser: InsertUser): Promise<User>;
+  updateUser(id: number, updateData: UpdateUserData): Promise<User>;
   getRegistrationByEmail(email: string): Promise<Registration | undefined>;
   createRegistration(insertRegistration: InsertRegistration): Promise<Registration>;
   getRegistrationCount(): Promise<number>;
   getAllRegistrations(): Promise<Registration[]>;
   deleteRegistration(id: number): Promise<void>;
+  createDefaultAdmin(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -57,6 +59,26 @@ export class DatabaseStorage implements IStorage {
 
   async deleteRegistration(id: number): Promise<void> {
     await db.delete(registrations).where(eq(registrations.id, id));
+  }
+
+  async updateUser(id: number, updateData: UpdateUserData): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async createDefaultAdmin(): Promise<void> {
+    const existingAdmin = await this.getUserByUsername("admin@doneforyoupros.com");
+    if (!existingAdmin) {
+      await this.createUser({
+        username: "admin@doneforyoupros.com",
+        password: "password@security",
+        role: "admin"
+      });
+    }
   }
 }
 
