@@ -234,6 +234,8 @@ export default function Game() {
     setWinnerCard(null);
     setFirstCardComplete(false);
     setShowConfetti(false);
+    setShowWarningPopup(false);
+    setHideCard2Prizes(false);
   };
 
   return (
@@ -353,6 +355,14 @@ export default function Game() {
                 onScratchComplete={() => handleCardScratchComplete(card.id)}
                 isFullyScratched={isCardFullyScratched(card)}
                 hidePrizes={card.id === 2 && hideCard2Prizes}
+                onInitialCardTouch={card.id === 2 && !firstCardComplete ? () => {
+                  setShowWarningPopup(true);
+                  setHideCard2Prizes(true);
+                  setTimeout(() => {
+                    setShowWarningPopup(false);
+                    setHideCard2Prizes(false);
+                  }, 3000);
+                } : undefined}
               />
             ))}
           </div>
@@ -508,6 +518,7 @@ interface ScratchOffCardProps {
   onScratchComplete?: () => void;
   isFullyScratched: boolean;
   hidePrizes?: boolean;
+  onInitialCardTouch?: () => void;
 }
 
 function ScratchOffCard({
@@ -516,6 +527,7 @@ function ScratchOffCard({
   onScratchComplete,
   isFullyScratched,
   hidePrizes = false,
+  onInitialCardTouch,
 }: ScratchOffCardProps) {
   // Add custom font style for game page
   const wayComeFontStyle = {
@@ -626,6 +638,7 @@ function ScratchOffCard({
                     height={56}
                     scratchPercent={40}
                     onScratchComplete={() => handleCellScratch(index)}
+                    onInitialTouch={onInitialCardTouch}
                   >
                     <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
                       <div

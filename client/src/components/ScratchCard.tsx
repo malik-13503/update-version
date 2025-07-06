@@ -5,6 +5,7 @@ interface ScratchCardProps {
   height: number;
   scratchPercent?: number;
   onScratchComplete?: () => void;
+  onInitialTouch?: () => void;
   children: React.ReactNode;
   isScratched?: boolean;
 }
@@ -14,12 +15,14 @@ export default function ScratchCard({
   height,
   scratchPercent = 50,
   onScratchComplete,
+  onInitialTouch,
   children,
   isScratched = false,
 }: ScratchCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isCompleted, setIsCompleted] = useState(isScratched);
+  const [hasBeenTouched, setHasBeenTouched] = useState(false);
 
   useEffect(() => {
     if (isScratched) {
@@ -64,6 +67,14 @@ export default function ScratchCard({
 
   const startScratch = (e: any) => {
     if (isCompleted) return;
+    
+    // Trigger initial touch callback if this is the first touch
+    if (!hasBeenTouched && onInitialTouch) {
+      setHasBeenTouched(true);
+      onInitialTouch();
+      return; // Don't start scratching on first touch
+    }
+    
     setIsDrawing(true);
     const pos = getEventPos(e);
     const ctx = canvasRef.current?.getContext("2d");
