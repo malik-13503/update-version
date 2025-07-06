@@ -43,6 +43,7 @@ export default function Game() {
   const [, setLocation] = useLocation();
   const [gameStarted, setGameStarted] = useState(true); // Start game directly
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showWarningPopup, setShowWarningPopup] = useState(false);
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
       id: 1,
@@ -156,8 +157,10 @@ export default function Game() {
 
 
   const handleScratch = (cardId: number, index: number) => {
-    // Prevent scratching second card until first card is complete
+    // Show warning popup if trying to scratch second card before first card is complete
     if (cardId === 2 && !firstCardComplete) {
+      setShowWarningPopup(true);
+      setTimeout(() => setShowWarningPopup(false), 3000);
       return;
     }
     
@@ -338,25 +341,13 @@ export default function Game() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
             {cards.map((card) => (
-              <div key={card.id} className="relative">
-                {card.id === 2 && !firstCardComplete && (
-                  <div className="absolute inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
-                    <div className="text-center text-white p-4">
-                      <div className="text-4xl mb-2">🔒</div>
-                      <p className="text-lg font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                        Complete Card 1 First!
-                      </p>
-                    </div>
-                  </div>
-                )}
-                <ScratchOffCard
-                  key={card.id}
-                  card={card}
-                  onScratch={handleScratch}
-                  onScratchComplete={() => handleCardScratchComplete(card.id)}
-                  isFullyScratched={isCardFullyScratched(card)}
-                />
-              </div>
+              <ScratchOffCard
+                key={card.id}
+                card={card}
+                onScratch={handleScratch}
+                onScratchComplete={() => handleCardScratchComplete(card.id)}
+                isFullyScratched={isCardFullyScratched(card)}
+              />
             ))}
           </div>
         </div>
@@ -380,6 +371,26 @@ export default function Game() {
         </div>
       </div>
 
+      {/* Warning Popup */}
+      {showWarningPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 max-w-sm mx-4 shadow-2xl border-4 border-orange-500">
+            <div className="text-center">
+              <div className="text-4xl mb-3">⚠️</div>
+              <h3 className="text-lg sm:text-xl font-bold mb-2 text-orange-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                Hold On!
+              </h3>
+              <p className="text-sm sm:text-base text-gray-700 mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                Please scratch the first card completely before moving to the second card.
+              </p>
+              <div className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 rounded-lg font-semibold text-sm">
+                Complete Card 1 First!
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Winner Modal */}
       {gameComplete && winnerCard && (
         <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 p-2 sm:p-4">
@@ -388,60 +399,63 @@ export default function Game() {
               
               <div className="relative z-10">
                 {/* Trophy and celebration */}
-                <div className="text-4xl sm:text-6xl mb-2 sm:mb-4 animate-bounce">🏆</div>
-                <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">🎉 🎊 🎉</div>
+                <div className="text-3xl sm:text-5xl mb-2 sm:mb-4 animate-bounce">🏆</div>
+                <div className="text-xl sm:text-3xl mb-2 sm:mb-4">🎉 🎊 🎉</div>
                 
-                <h3 className="text-3xl sm:text-5xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
+                <h3 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
                   WINNER!
                 </h3>
                 
-                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-inner border-2 border-green-200">
-                  <h4 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-inner border-2 border-green-200">
+                  <h4 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     🎁 CONGRATULATIONS!
                   </h4>
-                  <p className="text-sm sm:text-xl font-semibold text-blue-600 mb-1 sm:mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-xs sm:text-base font-semibold text-blue-600 mb-1 sm:mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     You matched 3 "Dishwasher New Water Valve Installation" prizes!
                   </p>
-                  <p className="text-xl sm:text-3xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p className="text-lg sm:text-2xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
                     TOTAL VALUE: $591
                   </p>
                 </div>
                 
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-6 rounded-xl mb-4 sm:mb-6 shadow-lg">
-                  <h4 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3" style={wayComeFontStyle}>
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-lg">
+                  <h4 className="text-base sm:text-xl font-bold mb-2 sm:mb-3" style={wayComeFontStyle}>
                     🔥 CLAIM YOUR PRIZE NOW!
                   </h4>
-                  <p className="text-sm sm:text-lg mb-2 sm:mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    Call Done For You Pros immediately to schedule your FREE professional installation:
+                  <div className="bg-white text-gray-900 p-2 sm:p-3 rounded-lg shadow-inner mb-2 sm:mb-3">
+                    <p className="text-sm sm:text-lg font-bold text-blue-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      📞 CALL NOW
+                    </p>
+                    <p className="text-lg sm:text-2xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      (310) 295-6355
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-2 sm:p-3 rounded-xl mb-3 sm:mb-4 shadow-lg">
+                  <p className="text-xs sm:text-base font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    🎯 Reference Code: WINNER2024
                   </p>
-                  <a 
-                    href="tel:+1234567890" 
-                    className="inline-block bg-green-500 hover:bg-green-600 text-white font-bold py-2 sm:py-4 px-4 sm:px-8 rounded-xl text-lg sm:text-2xl transform transition-all duration-200 hover:scale-105 shadow-lg"
-                    style={wayComeFontStyle}
-                  >
-                    📞 CALL NOW: (123) 456-7890
-                  </a>
-                  <p className="text-xs sm:text-sm mt-2 sm:mt-3 text-blue-100" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    ⏰ Limited time offer - Call within 24 hours!
+                  <p className="text-xs sm:text-sm mt-1 opacity-90" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    Mention this code when you call!
                   </p>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                  <Button 
-                    onClick={resetGame} 
-                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-lg border-2 border-yellow-600"
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                  <button
+                    onClick={() => setGameComplete(false)}
+                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
-                    Play Again
-                  </Button>
-                  <Button
-                    onClick={() => setLocation("/")}
-                    variant="outline"
-                    className="flex-1 border-2 border-gray-400 hover:border-gray-600 text-gray-700 hover:text-gray-900 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg text-sm sm:text-lg"
+                    Continue Playing
+                  </button>
+                  <button
+                    onClick={() => setLocation('/')}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     Back to Home
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

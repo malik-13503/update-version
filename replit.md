@@ -104,6 +104,12 @@ The application follows a monorepo structure with separate client and server dir
 - July 6, 2025. Fixed game page to start immediately without "Play Now" button
 - July 6, 2025. Simplified scratch card prize display to prevent text overlap
 - July 6, 2025. Updated all logo references to use proper asset imports
+- July 6, 2025. Removed visual lock overlay and implemented backend logic for card sequence security
+- July 6, 2025. Added eye-catching warning popup when users try to scratch Card 2 before completing Card 1
+- July 6, 2025. Made winner popup fully responsive with smaller text sizes for mobile devices
+- July 6, 2025. Removed "limited offer" and "call within 24 hours" text from winner popup
+- July 6, 2025. Updated winner popup with real Done For You Pros phone number (310) 295-6355
+- July 6, 2025. Enhanced popup responsiveness with proper mobile breakpoints and reduced content sizing
 
 ## User Preferences
 
