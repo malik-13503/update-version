@@ -489,24 +489,24 @@ function ScratchOffCard({
           {/* Scratch Grid */}
           <div className="grid grid-cols-3 gap-1 mb-3 md:mb-4">
             {Array.from({ length: 9 }).map((_, index) => (
-              <div key={index} className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative">
+              <div key={index} className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative overflow-hidden">
                 {scratchedCells[index] ? (
-                  <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
+                  <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
                     <div
-                      className="text-center leading-tight w-full h-full flex flex-col justify-center"
+                      className="text-center w-full h-full flex flex-col justify-center"
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
-                      <div className="text-center p-0.5">
-                        <div className="text-[8px] font-bold leading-tight mb-1">
+                      <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
+                        <div className="text-[6px] font-bold leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(0, 2).join(' ')}
                         </div>
-                        <div className="text-[7px] leading-tight mb-1">
+                        <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(2, 5).join(' ')}
                         </div>
-                        <div className="text-[7px] leading-tight mb-1">
+                        <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(5).join(' ')}
                         </div>
-                        <div className="text-[8px] font-bold text-green-600">
+                        <div className="text-[6px] font-bold text-green-600 leading-none max-w-full">
                           {card.prizeValues[index]}
                         </div>
                       </div>
@@ -519,22 +519,22 @@ function ScratchOffCard({
                     scratchPercent={40}
                     onScratchComplete={() => handleCellScratch(index)}
                   >
-                    <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-1">
+                    <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
                       <div
-                        className="text-center leading-tight w-full h-full flex flex-col justify-center"
+                        className="text-center w-full h-full flex flex-col justify-center"
                         style={{ fontFamily: "Montserrat, sans-serif" }}
                       >
-                        <div className="text-center p-0.5">
-                          <div className="text-[8px] font-bold leading-tight mb-1">
+                        <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
+                          <div className="text-[6px] font-bold leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(0, 2).join(' ')}
                           </div>
-                          <div className="text-[7px] leading-tight mb-1">
+                          <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(2, 5).join(' ')}
                           </div>
-                          <div className="text-[7px] leading-tight mb-1">
+                          <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(5).join(' ')}
                           </div>
-                          <div className="text-[8px] font-bold text-green-600">
+                          <div className="text-[6px] font-bold text-green-600 leading-none max-w-full">
                             {card.prizeValues[index]}
                           </div>
                         </div>
