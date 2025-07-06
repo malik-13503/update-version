@@ -321,13 +321,14 @@ export default function Game() {
           </div>
           <div className="text-right">
             <h2
-              className="text-lg md:text-2xl lg:text-3xl font-bold text-white"
+              className="text-xl md:text-3xl lg:text-4xl font-bold text-white"
               style={{
                 ...wayComeFontStyle,
-                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                textShadow: "3px 3px 6px rgba(0,0,0,0.7)",
+                letterSpacing: "1px",
               }}
             >
-              $5 Million Instant Prizes
+              $5 MILLION <span style={{ color: "#000", textShadow: "2px 2px 4px rgba(255,255,255,0.8)" }}>INSTANT PRIZES</span>
             </h2>
           </div>
         </div>
@@ -335,33 +336,38 @@ export default function Game() {
 
       {/* Game Introduction Section */}
       <div className="text-center py-8 px-4 bg-white">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h1
-            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2"
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
-              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+              textShadow: "4px 4px 8px rgba(0,0,0,0.3)",
+              letterSpacing: "2px",
+              lineHeight: "1.1",
             }}
           >
             IT'S TIME TO PLAY OUR SCRATCH &
           </h1>
           <h1
-            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
-              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+              textShadow: "4px 4px 8px rgba(0,0,0,0.3)",
+              letterSpacing: "2px",
+              lineHeight: "1.1",
             }}
           >
             WIN GAME
           </h1>
           <h2
-            className="text-2xl md:text-3xl lg:text-4xl font-bold"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold"
             style={{
               ...wayComeFontStyle,
               color: "#2C5CDC",
-              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+              textShadow: "3px 3px 6px rgba(0,0,0,0.3)",
+              letterSpacing: "1px",
             }}
           >
             2 CHANCES TO WIN AMAZING PRIZES!
@@ -659,7 +665,7 @@ function ScratchOffCard({
               ? card.isWinner
                 ? "WINNER!"
                 : "TRY AGAIN"
-              : "SCRATCH TO WIN"}
+              : "PLAY NOW"}
           </div>
         </div>
       </div>
