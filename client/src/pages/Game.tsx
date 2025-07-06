@@ -321,7 +321,7 @@ export default function Game() {
           </div>
           <div className="text-right">
             <h2
-              className="text-xl md:text-3xl lg:text-4xl font-bold text-white"
+              className="text-lg md:text-2xl lg:text-3xl font-bold text-white"
               style={{
                 ...wayComeFontStyle,
                 textShadow: "3px 3px 6px rgba(0,0,0,0.7)",
@@ -338,7 +338,7 @@ export default function Game() {
       <div className="text-center py-8 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
           <h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2"
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
@@ -350,7 +350,7 @@ export default function Game() {
             IT'S TIME TO PLAY OUR SCRATCH &
           </h1>
           <h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
@@ -362,7 +362,7 @@ export default function Game() {
             WIN GAME
           </h1>
           <h2
-            className="text-3xl md:text-4xl lg:text-5xl font-bold"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold"
             style={{
               ...wayComeFontStyle,
               color: "#2C5CDC",
