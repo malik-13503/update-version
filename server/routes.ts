@@ -1,15 +1,20 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertRegistrationSchema, loginSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
+
+// Extend Request type to include session
+interface AuthRequest extends Request {
+  session: any;
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize default admin user
   await storage.createDefaultAdmin();
 
   // Authentication middleware
-  const requireAuth = async (req: any, res: any, next: any) => {
+  const requireAuth = async (req: AuthRequest, res: Response, next: any) => {
     if (!req.session?.userId) {
       return res.status(401).json({ message: "Authentication required" });
     }
@@ -17,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Login endpoint
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", async (req: AuthRequest, res: Response) => {
     try {
       const validatedData = loginSchema.parse(req.body);
       
@@ -52,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Logout endpoint
-  app.post("/api/auth/logout", (req, res) => {
+  app.post("/api/auth/logout", (req: AuthRequest, res: Response) => {
     req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ message: "Could not log out" });
@@ -62,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Check auth status
-  app.get("/api/auth/me", async (req, res) => {
+  app.get("/api/auth/me", async (req: AuthRequest, res: Response) => {
     if (!req.session?.userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
@@ -148,12 +153,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update admin credentials
-  app.put("/api/admin/update-credentials", requireAuth, async (req, res) => {
+  app.put("/api/admin/update-credentials", requireAuth, async (req: AuthRequest, res: Response) => {
     try {
       const validatedData = updateUserSchema.parse(req.body);
       const userId = req.session.userId;
       
-      const updatedUser = await storage.updateUser(userId, validatedData);
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
+      const updatedUser = await storage.updateUser(userId!, validatedData);
       
       // Update session if username changed
       if (validatedData.username) {
