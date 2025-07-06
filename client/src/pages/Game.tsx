@@ -158,14 +158,10 @@ export default function Game() {
 
 
   const handleScratch = (cardId: number, index: number) => {
-    // Show warning popup immediately when user starts scratching Card 2 before Card 1 is complete
+    // Completely block scratching Card 2 until Card 1 is complete
     if (cardId === 2 && !firstCardComplete) {
       setShowWarningPopup(true);
       setHideCard2Prizes(true);
-      setTimeout(() => {
-        setShowWarningPopup(false);
-        setHideCard2Prizes(false);
-      }, 3000);
       return;
     }
     
@@ -188,6 +184,9 @@ export default function Game() {
       // If it's the first card and it's fully scratched
       if (cardId === 1 && cardFullyScratched) {
         setFirstCardComplete(true);
+        // Clear any warning states when Card 1 is completed
+        setShowWarningPopup(false);
+        setHideCard2Prizes(false);
       }
       
       // If it's the second card (winner card) and it's fully scratched
@@ -358,10 +357,6 @@ export default function Game() {
                 onInitialCardTouch={card.id === 2 && !firstCardComplete ? () => {
                   setShowWarningPopup(true);
                   setHideCard2Prizes(true);
-                  setTimeout(() => {
-                    setShowWarningPopup(false);
-                    setHideCard2Prizes(false);
-                  }, 3000);
                 } : undefined}
               />
             ))}
@@ -399,9 +394,16 @@ export default function Game() {
               <p className="text-sm sm:text-base text-gray-700 mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
                 Please scratch the first card completely before moving to the second card.
               </p>
-              <div className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 rounded-lg font-semibold text-sm">
+              <button 
+                onClick={() => {
+                  setShowWarningPopup(false);
+                  setHideCard2Prizes(false);
+                }}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 rounded-lg font-semibold text-sm hover:from-orange-600 hover:to-red-600 transition-colors cursor-pointer"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
                 Complete Card 1 First!
-              </div>
+              </button>
             </div>
           </div>
         </div>

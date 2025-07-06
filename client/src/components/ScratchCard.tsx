@@ -68,11 +68,10 @@ export default function ScratchCard({
   const startScratch = (e: any) => {
     if (isCompleted) return;
     
-    // Trigger initial touch callback if this is the first touch
-    if (!hasBeenTouched && onInitialTouch) {
-      setHasBeenTouched(true);
+    // Always trigger callback if provided - this handles blocking logic
+    if (onInitialTouch) {
       onInitialTouch();
-      return; // Don't start scratching on first touch
+      return; // Don't start scratching when callback is provided
     }
     
     setIsDrawing(true);
