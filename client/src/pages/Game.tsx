@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ScratchCard from "@/components/ScratchCard";
 import logoPath from "@assets/logo_1751279296203.png";
+import headingImage from "@assets/heading_1751837138504.png";
 
 interface ScratchCardData {
   id: number;
@@ -41,7 +42,8 @@ export default function Game() {
   }
   
   const [, setLocation] = useLocation();
-  const [gameStarted, setGameStarted] = useState(true); // Start game immediately
+  const [gameStarted, setGameStarted] = useState(false); // Start with play button
+  const [showConfetti, setShowConfetti] = useState(false);
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
       id: 1,
@@ -101,6 +103,59 @@ export default function Game() {
   const [gameComplete, setGameComplete] = useState(false);
   const [winnerCard, setWinnerCard] = useState<ScratchCardData | null>(null);
 
+  // Confetti component
+  const Confetti = () => {
+    const confettiPieces = Array.from({ length: 100 }, (_, i) => {
+      const colors = ['#2C5CDC', '#F76D46', '#FFD700', '#FF6B6B', '#4ECDC4'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const size = Math.random() * 10 + 5;
+      const leftPos = Math.random() * 100;
+      const animationDelay = Math.random() * 3;
+      const animationDuration = 3 + Math.random() * 2;
+      
+      return (
+        <div
+          key={i}
+          className="absolute animate-bounce"
+          style={{
+            left: `${leftPos}%`,
+            top: '-20px',
+            backgroundColor: color,
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: Math.random() > 0.5 ? '50%' : '0%',
+            animationDelay: `${animationDelay}s`,
+            animationDuration: `${animationDuration}s`,
+            transform: `rotate(${Math.random() * 360}deg)`,
+            animation: `confetti-fall ${animationDuration}s ease-out ${animationDelay}s forwards`,
+          }}
+        />
+      );
+    });
+    
+    return (
+      <div className="fixed inset-0 pointer-events-none z-40">
+        <style>{`
+          @keyframes confetti-fall {
+            0% {
+              transform: translateY(-100vh) rotate(0deg);
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(100vh) rotate(720deg);
+              opacity: 0;
+            }
+          }
+        `}</style>
+        {confettiPieces}
+      </div>
+    );
+  };
+
+  const handlePlayNow = () => {
+    setGameStarted(true);
+  };
+
   const handleScratch = (cardId: number, index: number) => {
     setCards((prev) =>
       prev.map((card) => {
@@ -127,7 +182,10 @@ export default function Game() {
         
         if (dishwasherCount >= 3) {
           setWinnerCard(updatedCard);
+          setShowConfetti(true);
           setTimeout(() => setGameComplete(true), 1000);
+          // Stop confetti after 5 seconds
+          setTimeout(() => setShowConfetti(false), 5000);
         }
       } else if (cardId === 1 && cardFullyScratched) {
         // First card is not a winner, check if both cards are done
@@ -250,31 +308,46 @@ export default function Game() {
       </div>
 
       {/* Game Introduction Section */}
-      <div className="text-center py-8 px-4" style={{ backgroundColor: "#f8f9fa" }}>
+      <div className="text-center py-8 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <h2
-            className="text-2xl md:text-4xl font-bold mt-4"
-            style={{ ...wayComeFontStyle, color: "#2b5bdc" }}
-          >
-            2 CHANCES TO WIN AMAZING PRIZES!
-          </h2>
+          <img
+            src={headingImage}
+            alt="It's Time to Play Our Scratch & Win Game - 2 Chances to Win Amazing Prizes!"
+            className="mx-auto max-w-full h-auto"
+          />
         </div>
       </div>
 
       {/* Game Cards Section */}
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-            {cards.map((card) => (
-              <ScratchOffCard
-                key={card.id}
-                card={card}
-                onScratch={handleScratch}
-                onScratchComplete={() => handleCardScratchComplete(card.id)}
-                isFullyScratched={isCardFullyScratched(card)}
-              />
-            ))}
-          </div>
+          {!gameStarted ? (
+            <div className="text-center">
+              <Button
+                onClick={handlePlayNow}
+                className="text-2xl md:text-4xl font-bold py-6 px-12 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105"
+                style={{
+                  background: "linear-gradient(45deg, #2C5CDC, #F76D46)",
+                  color: "white",
+                  fontFamily: "Montserrat, sans-serif",
+                }}
+              >
+                PLAY NOW
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+              {cards.map((card) => (
+                <ScratchOffCard
+                  key={card.id}
+                  card={card}
+                  onScratch={handleScratch}
+                  onScratchComplete={() => handleCardScratchComplete(card.id)}
+                  isFullyScratched={isCardFullyScratched(card)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -298,21 +371,14 @@ export default function Game() {
 
       {/* Winner Modal */}
       {gameComplete && winnerCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-500 p-2 rounded-3xl max-w-2xl w-full animate-pulse shadow-2xl">
-            <div className="bg-white rounded-2xl p-8 text-center relative overflow-hidden">
-              {/* Animated sparkles */}
-              <div className="absolute inset-0 opacity-20">
-                <div className="absolute top-4 left-4 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
-                <div className="absolute top-8 right-8 w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-75"></div>
-                <div className="absolute bottom-6 left-8 w-3 h-3 bg-yellow-400 rounded-full animate-pulse delay-150"></div>
-                <div className="absolute bottom-4 right-6 w-2 h-2 bg-red-500 rounded-full animate-pulse delay-300"></div>
-              </div>
+        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-4 rounded-3xl max-w-lg w-full mx-4 shadow-2xl">
+            <div className="bg-white rounded-2xl p-6 text-center relative overflow-hidden">
               
               <div className="relative z-10">
                 {/* Trophy and celebration */}
-                <div className="text-8xl mb-4 animate-bounce">🏆</div>
-                <div className="text-6xl mb-6">🎉 🎊 🎉</div>
+                <div className="text-6xl mb-4 animate-bounce">🏆</div>
+                <div className="text-4xl mb-4">🎉 🎊 🎉</div>
                 
                 <h3 className="text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
                   WINNER!
@@ -371,6 +437,9 @@ export default function Game() {
           </div>
         </div>
       )}
+
+      {/* Confetti */}
+      {showConfetti && <Confetti />}
 
       {/* Non-Winner Modal */}
       {gameComplete && !winnerCard && (
