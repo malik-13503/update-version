@@ -6,16 +6,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Trash2, Users, Eye, Calendar, LogOut, Settings, Download, FileText, FileSpreadsheet } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { 
+  Trash2, Users, Eye, Calendar, LogOut, Settings, Download, FileText, FileSpreadsheet,
+  TrendingUp, TrendingDown, Mail, Phone, Video, BarChart3, PieChart, Activity,
+  Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, Globe
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Registration, User, UpdateUserData } from "@shared/schema";
+import logoPath from "@assets/logo_1751279296203.png";
 
 export default function Admin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [activeTab, setActiveTab] = useState("overview");
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -223,6 +235,69 @@ export default function Admin() {
     });
   };
 
+  // Filter and search functions
+  const filteredRegistrations = registrations?.filter((reg) => {
+    const matchesSearch = 
+      reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      reg.phone.includes(searchTerm);
+    
+    const matchesFilter = 
+      filterType === "all" ||
+      (filterType === "video-watched" && reg.videoWatched) ||
+      (filterType === "no-video" && !reg.videoWatched) ||
+      (filterType === "today" && new Date(reg.createdAt).toDateString() === new Date().toDateString()) ||
+      (filterType === "this-week" && isThisWeek(new Date(reg.createdAt)));
+    
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "oldest":
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "email":
+        return a.email.localeCompare(b.email);
+      default:
+        return 0;
+    }
+  }) || [];
+
+  const isThisWeek = (date: Date) => {
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return date >= weekAgo && date <= today;
+  };
+
+  // Analytics calculations
+  const totalRegistrations = registrations?.length || 0;
+  const videoWatchedCount = registrations?.filter(r => r.videoWatched).length || 0;
+  const todayCount = registrations?.filter(r => 
+    new Date(r.createdAt).toDateString() === new Date().toDateString()
+  ).length || 0;
+  const thisWeekCount = registrations?.filter(r => 
+    isThisWeek(new Date(r.createdAt))
+  ).length || 0;
+  const conversionRate = totalRegistrations > 0 ? (videoWatchedCount / totalRegistrations) * 100 : 0;
+
+  // Get registration trend (last 7 days)
+  const getRegistrationTrend = () => {
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      return date.toDateString();
+    }).reverse();
+
+    return last7Days.map(dateString => ({
+      date: dateString,
+      count: registrations?.filter(r => 
+        new Date(r.createdAt).toDateString() === dateString
+      ).length || 0
+    }));
+  };
+
   const formatDate = (date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString("en-US", {
@@ -231,6 +306,14 @@ export default function Admin() {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+    });
+  };
+
+  const formatShortDate = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -261,95 +344,124 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      {/* Enhanced Header with Logo */}
+      <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-orange-600 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold" style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
-                Admin Dashboard
-              </h1>
-              <p className="text-gray-500 mt-1" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                Welcome {authData?.user?.username} - Manage registrations and settings
-              </p>
-            </div>
+          <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 px-4 py-2 rounded-full">
-                <Users className="w-4 h-4" />
+              {/* Logo */}
+              <div className="bg-white p-3 rounded-xl shadow-md">
+                <img
+                  src={logoPath}
+                  alt="Done For You Pros"
+                  className="h-12 w-auto"
+                />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  Admin Dashboard
+                </h1>
+                <p className="text-blue-100 mt-1" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  Welcome {authData?.user?.username?.split('@')[0]} - Control Center
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Live Stats Badge */}
+              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full border border-white/30">
+                <Activity className="w-4 h-4 animate-pulse" />
                 <span className="font-semibold" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                  {registrations?.length || 0} Total
+                  {totalRegistrations} Users
                 </span>
               </div>
               
-              {/* Export Dropdown */}
+              {/* Quick Actions */}
               <div className="flex space-x-2">
                 <Button
                   onClick={exportToCSV}
                   variant="outline"
                   size="sm"
-                  className="bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                  className="bg-white/10 hover:bg-white/20 border-white/30 text-white hover:text-white backdrop-blur-sm"
                 >
                   <FileSpreadsheet className="w-4 h-4 mr-2" />
-                  CSV
+                  Export CSV
                 </Button>
                 <Button
-                  onClick={exportToJSON}
+                  onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/registrations"] })}
                   variant="outline"
                   size="sm"
-                  className="bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-700"
+                  className="bg-white/10 hover:bg-white/20 border-white/30 text-white hover:text-white backdrop-blur-sm"
                 >
-                  <FileText className="w-4 h-4 mr-2" />
-                  JSON
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh
                 </Button>
               </div>
 
               {/* Settings */}
               <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-gray-50 hover:bg-gray-100">
+                  <Button variant="outline" size="sm" className="bg-white/10 hover:bg-white/20 border-white/30 text-white hover:text-white backdrop-blur-sm">
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
-                      Update Admin Credentials
+                    <DialogTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                      <Settings className="w-5 h-5" />
+                      <span>Admin Settings</span>
                     </DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleUpdateCredentials} className="space-y-4">
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Leave fields blank to keep current credentials
+                      </AlertDescription>
+                    </Alert>
                     <div>
                       <Label htmlFor="newUsername" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                        New Email (leave blank to keep current)
+                        New Email Address
                       </Label>
                       <Input
                         id="newUsername"
                         type="email"
-                        placeholder="new-email@doneforyoupros.com"
+                        placeholder="admin@doneforyoupros.com"
                         value={credentials.username}
                         onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
+                        className="focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
                     <div>
                       <Label htmlFor="newPassword" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                        New Password (leave blank to keep current)
+                        New Password
                       </Label>
                       <Input
                         id="newPassword"
                         type="password"
-                        placeholder="Enter new password"
+                        placeholder="Enter new secure password"
                         value={credentials.password}
                         onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                        className="focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 pt-4">
                       <Button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold"
                         disabled={updateCredentialsMutation.isPending}
+                        style={{ fontFamily: "Montserrat, sans-serif" }}
                       >
-                        {updateCredentialsMutation.isPending ? "Updating..." : "Update"}
+                        {updateCredentialsMutation.isPending ? (
+                          <div className="flex items-center space-x-2">
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            <span>Updating...</span>
+                          </div>
+                        ) : (
+                          "Update Credentials"
+                        )}
                       </Button>
                       <Button
                         type="button"
@@ -368,164 +480,606 @@ export default function Admin() {
                 onClick={() => logoutMutation.mutate()}
                 variant="outline"
                 size="sm"
-                className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
+                className="bg-red-500/20 hover:bg-red-500/30 border-red-300/50 text-red-100 hover:text-white backdrop-blur-sm"
                 disabled={logoutMutation.isPending}
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Logout
+                {logoutMutation.isPending ? "Logging out..." : "Logout"}
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Enhanced Tabbed Dashboard */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
-                Total Registrations
-              </CardTitle>
-              <Users className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                {registrations?.length || 0}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif", color: "#F76D46" }}>
-                Video Watched
-              </CardTitle>
-              <Eye className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                {registrations?.filter(r => r.videoWatched).length || 0}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif", color: "#059669" }}>
-                Today's Registrations
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                {registrations?.filter(r => 
-                  new Date(r.createdAt).toDateString() === new Date().toDateString()
-                ).length || 0}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-4 bg-white/50 backdrop-blur-sm border border-gray-200">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="users" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
+              <Users className="w-4 h-4 mr-2" />
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="tools" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
+              <Settings className="w-4 h-4 mr-2" />
+              Tools
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Registrations Table */}
-        <Card className="bg-white shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-orange-50 border-b">
-            <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
-              User Registrations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            {registrations && registrations.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full table-auto">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>ID</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Name</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Email</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Phone</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Video Watched</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Registration Date</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {registrations.map((registration, index) => (
-                      <tr 
-                        key={registration.id} 
-                        className={`border-b hover:bg-gradient-to-r hover:from-blue-25 hover:to-orange-25 transition-colors ${
-                          index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-                        }`}
-                      >
-                        <td className="py-4 px-6" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
-                            #{registration.id}
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* Enhanced Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    Total Users
+                  </CardTitle>
+                  <Users className="h-5 w-5 opacity-80" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    {totalRegistrations}
+                  </div>
+                  <p className="text-xs opacity-80 mt-1">
+                    {thisWeekCount > 0 && `+${thisWeekCount} this week`}
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    Video Engagement
+                  </CardTitle>
+                  <Video className="h-5 w-5 opacity-80" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    {Math.round(conversionRate)}%
+                  </div>
+                  <div className="mt-2">
+                    <Progress value={conversionRate} className="h-2 bg-orange-400/30" />
+                  </div>
+                  <p className="text-xs opacity-80 mt-1">
+                    {videoWatchedCount}/{totalRegistrations} watched video
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    Today's Growth
+                  </CardTitle>
+                  <TrendingUp className="h-5 w-5 opacity-80" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    {todayCount}
+                  </div>
+                  <p className="text-xs opacity-80 mt-1">
+                    New registrations today
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-lg">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    This Week
+                  </CardTitle>
+                  <Calendar className="h-5 w-5 opacity-80" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    {thisWeekCount}
+                  </div>
+                  <p className="text-xs opacity-80 mt-1">
+                    Last 7 days
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Quick Stats and Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="shadow-lg border-0">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-orange-50">
+                  <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                    <Activity className="w-5 h-5 inline mr-2" />
+                    Registration Trend (7 Days)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="space-y-3">
+                    {getRegistrationTrend().map((day, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm font-medium" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          {formatShortDate(day.date)}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-32 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-blue-500 to-orange-500 h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${Math.max((day.count / Math.max(...getRegistrationTrend().map(d => d.count), 1)) * 100, 5)}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-bold text-gray-700 w-8 text-right" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                            {day.count}
                           </span>
-                        </td>
-                        <td className="py-4 px-6 font-medium text-gray-900" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                          {registration.name}
-                        </td>
-                        <td className="py-4 px-6">
-                          <a 
-                            href={`mailto:${registration.email}`}
-                            className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                            style={{ fontFamily: "Montserrat, sans-serif" }}
-                          >
-                            {registration.email}
-                          </a>
-                        </td>
-                        <td className="py-4 px-6">
-                          <a 
-                            href={`tel:${registration.phone}`}
-                            className="text-orange-600 hover:text-orange-800 hover:underline transition-colors"
-                            style={{ fontFamily: "Montserrat, sans-serif" }}
-                          >
-                            {registration.phone}
-                          </a>
-                        </td>
-                        <td className="py-4 px-6">
-                          <Badge 
-                            variant={registration.videoWatched ? "default" : "secondary"}
-                            className={registration.videoWatched ? 
-                              "bg-green-100 text-green-800 hover:bg-green-200" : 
-                              "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }
-                          >
-                            {registration.videoWatched ? "✓ Yes" : "✗ No"}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-6 text-sm text-gray-500" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                          {formatDate(registration.createdAt)}
-                        </td>
-                        <td className="py-4 px-6">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDelete(registration.id)}
-                            disabled={deleteRegistration.isPending}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50 border-red-200 hover:border-red-300 transition-all"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </td>
-                      </tr>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                  No registrations found
-                </p>
-                <p className="text-gray-400 text-sm mt-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                  Users will appear here once they register
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg border-0">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
+                  <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                    <CheckCircle className="w-5 h-5 inline mr-2" />
+                    Recent Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    {registrations?.slice(0, 5).map((reg, index) => (
+                      <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {reg.name.charAt(0).toUpperCase()}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                            {reg.name}
+                          </p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {reg.email} • {formatShortDate(reg.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex-shrink-0">
+                          {reg.videoWatched ? (
+                            <Video className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <Clock className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            {/* Search and Filter Controls */}
+            <Card className="shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-orange-50">
+                <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                  <Search className="w-5 h-5 inline mr-2" />
+                  User Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search by name, email, or phone..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 focus:border-blue-500 focus:ring-blue-500"
+                        style={{ fontFamily: "Montserrat, sans-serif" }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500 bg-white"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      <option value="all">All Users</option>
+                      <option value="video-watched">Video Watched</option>
+                      <option value="no-video">No Video</option>
+                      <option value="today">Today</option>
+                      <option value="this-week">This Week</option>
+                    </select>
+                    
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500 bg-white"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="name">Name A-Z</option>
+                      <option value="email">Email A-Z</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Results Summary */}
+                <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm text-gray-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    Showing {filteredRegistrations.length} of {totalRegistrations} users
+                  </span>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={exportToJSON}
+                      variant="outline"
+                      size="sm"
+                      className="bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-700"
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      Export JSON
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Enhanced Users Table */}
+            <Card className="bg-white shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-orange-50 border-b">
+                <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                  User Database
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {filteredRegistrations && filteredRegistrations.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full table-auto">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>User</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Contact</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Status</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Registered</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredRegistrations.map((registration, index) => (
+                          <tr 
+                            key={registration.id} 
+                            className={`border-b hover:bg-gradient-to-r hover:from-blue-25 hover:to-orange-25 transition-colors ${
+                              index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+                            }`}
+                          >
+                            <td className="py-4 px-6">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                                  {registration.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-900" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                                    {registration.name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    ID: #{registration.id}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">
+                              <div className="space-y-1">
+                                <div className="flex items-center space-x-2">
+                                  <Mail className="w-4 h-4 text-gray-400" />
+                                  <a 
+                                    href={`mailto:${registration.email}`}
+                                    className="text-blue-600 hover:text-blue-800 hover:underline transition-colors text-sm"
+                                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                                  >
+                                    {registration.email}
+                                  </a>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <Phone className="w-4 h-4 text-gray-400" />
+                                  <a 
+                                    href={`tel:${registration.phone}`}
+                                    className="text-orange-600 hover:text-orange-800 hover:underline transition-colors text-sm"
+                                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                                  >
+                                    {registration.phone}
+                                  </a>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">
+                              <div className="flex items-center space-x-2">
+                                <Badge 
+                                  variant={registration.videoWatched ? "default" : "secondary"}
+                                  className={registration.videoWatched ? 
+                                    "bg-green-100 text-green-800 hover:bg-green-200" : 
+                                    "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                  }
+                                >
+                                  {registration.videoWatched ? (
+                                    <>
+                                      <Video className="w-3 h-3 mr-1" />
+                                      Engaged
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Clock className="w-3 h-3 mr-1" />
+                                      Pending
+                                    </>
+                                  )}
+                                </Badge>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">
+                              <div className="text-sm text-gray-500" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                                <div>{formatDate(registration.createdAt)}</div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  {Math.floor((new Date().getTime() - new Date(registration.createdAt).getTime()) / (1000 * 60 * 60 * 24))} days ago
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-4 px-6">
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDelete(registration.id)}
+                                  disabled={deleteRegistration.isPending}
+                                  className="text-red-600 hover:text-red-800 hover:bg-red-50 border-red-200 hover:border-red-300 transition-all"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      {searchTerm || filterType !== "all" ? "No users match your filters" : "No registrations found"}
+                    </p>
+                    <p className="text-gray-400 text-sm mt-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      {searchTerm || filterType !== "all" ? "Try adjusting your search or filters" : "Users will appear here once they register"}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="shadow-lg border-0">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
+                  <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                    <PieChart className="w-5 h-5 inline mr-2" />
+                    Video Engagement Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-orange-600 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        {Math.round(conversionRate)}%
+                      </div>
+                      <p className="text-gray-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Video Completion Rate
+                      </p>
+                      <Progress value={conversionRate} className="h-4 mt-4" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-6">
+                      <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          {videoWatchedCount}
+                        </div>
+                        <p className="text-sm text-green-700">Watched Video</p>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-2xl font-bold text-gray-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          {totalRegistrations - videoWatchedCount}
+                        </div>
+                        <p className="text-sm text-gray-700">Pending</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg border-0">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                  <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                    <Globe className="w-5 h-5 inline mr-2" />
+                    Registration Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-blue-700">Average Daily</p>
+                        <p className="text-lg font-bold text-blue-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          {Math.round(totalRegistrations / 7)} users
+                        </p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-orange-700">Peak Day</p>
+                        <p className="text-lg font-bold text-orange-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          {Math.max(...getRegistrationTrend().map(d => d.count))} users
+                        </p>
+                      </div>
+                      <BarChart3 className="w-8 h-8 text-orange-600" />
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <div>
+                        <p className="text-sm text-green-700">Growth Rate</p>
+                        <p className="text-lg font-bold text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          +{thisWeekCount > 0 ? Math.round((thisWeekCount / Math.max(totalRegistrations - thisWeekCount, 1)) * 100) : 0}%
+                        </p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Tools Tab */}
+          <TabsContent value="tools" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#059669" }}>
+                    <FileSpreadsheet className="w-5 h-5" />
+                    <span>Export Data</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button
+                    onClick={exportToCSV}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Export as CSV
+                  </Button>
+                  <Button
+                    onClick={exportToJSON}
+                    variant="outline"
+                    className="w-full border-green-300 text-green-700 hover:bg-green-50"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Export as JSON
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-blue-100">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                    <RefreshCw className="w-5 h-5" />
+                    <span>Data Management</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button
+                    onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/registrations"] })}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Refresh Data
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSearchTerm("");
+                      setFilterType("all");
+                      setSortBy("newest");
+                    }}
+                    variant="outline"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Clear Filters
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-purple-100">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#7C3AED" }}>
+                    <Settings className="w-5 h-5" />
+                    <span>System Settings</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button
+                    onClick={() => setSettingsOpen(true)}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin Settings
+                  </Button>
+                  <Button
+                    onClick={() => logoutMutation.mutate()}
+                    variant="outline"
+                    className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                    disabled={logoutMutation.isPending}
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* System Information */}
+            <Card className="shadow-lg border-0">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <CardTitle style={{ fontFamily: "Montserrat, sans-serif", color: "#2C5CDC" }}>
+                  <Activity className="w-5 h-5 inline mr-2" />
+                  System Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      Database Status
+                    </h4>
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-green-700">Connected</span>
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <h4 className="font-semibold text-orange-800 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      Total Records
+                    </h4>
+                    <div className="text-2xl font-bold text-orange-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      {totalRegistrations}
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      Last Updated
+                    </h4>
+                    <div className="text-sm text-green-700">
+                      {registrations && registrations.length > 0 ? formatShortDate(registrations[0].createdAt) : "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+        </Tabs>
       </div>
     </div>
   );
