@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ScratchCard from "@/components/ScratchCard";
+import logoPath from "@assets/logo_1751279296203.png";
 
 interface ScratchCardData {
   id: number;
@@ -39,7 +40,7 @@ export default function Game() {
     }
   }
   const [, setLocation] = useLocation();
-  const [gameStarted, setGameStarted] = useState(false);
+  const [gameStarted, setGameStarted] = useState(true); // Start game immediately
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
       id: 1,
@@ -208,7 +209,7 @@ export default function Game() {
           <div className="flex items-center">
             <div className="bg-white p-2 rounded-lg">
               <img
-                src="/logo.png"
+                src={logoPath}
                 alt="Done For You Pros"
                 className="h-16 md:h-20 w-auto"
               />
@@ -531,41 +532,31 @@ function ScratchOffCard({
                         style={{ fontFamily: "Montserrat, sans-serif" }}
                       >
                         {card.isWinner ? (
-                          // Winner card shows same prize
-                          <>
-                            <div className="text-xs font-bold leading-tight">
-                              Dishwasher
-                            </div>
-                            <div className="text-xs leading-tight">New Water</div>
-                            <div className="text-xs leading-tight">
-                              Valve Install
-                            </div>
-                            <div className="text-xs font-bold">
+                          // Winner card shows same simple text
+                          <div className="text-center">
+                            <div className="text-xs font-bold">Dishwasher</div>
+                            <div className="text-xs font-bold text-green-600">
                               {card.prizeValues[index]}
                             </div>
-                          </>
+                          </div>
                         ) : (
-                          // Non-winner card shows different prizes
-                          <>
-                            <div className="text-xs font-bold leading-tight">
-                              {card.prizes[index]
-                                .split(" ")
-                                .slice(0, 2)
-                                .join(" ")}
-                            </div>
-                            <div className="text-xs leading-tight">
-                              {card.prizes[index]
-                                .split(" ")
-                                .slice(2, 4)
-                                .join(" ")}
-                            </div>
-                            <div className="text-xs leading-tight">
-                              {card.prizes[index].split(" ").slice(4).join(" ")}
-                            </div>
+                          // Non-winner card shows simplified text
+                          <div className="text-center">
                             <div className="text-xs font-bold">
+                              {index === 0 && "Refrigerator"}
+                              {index === 1 && "Bathroom Sink"}
+                              {index === 2 && "Washer"}
+                              {index === 3 && "Dishwasher"}
+                              {index === 4 && "Kitchen Sink"}
+                              {index === 5 && "Cooktop"}
+                              {index === 6 && "Garbage"}
+                              {index === 7 && "Dishwasher"}
+                              {index === 8 && "Bathroom"}
+                            </div>
+                            <div className="text-xs font-bold text-green-600">
                               {card.prizeValues[index]}
                             </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     </div>
