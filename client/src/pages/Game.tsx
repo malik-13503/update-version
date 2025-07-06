@@ -44,6 +44,7 @@ export default function Game() {
   const [gameStarted, setGameStarted] = useState(true); // Start game directly
   const [showConfetti, setShowConfetti] = useState(false);
   const [showWarningPopup, setShowWarningPopup] = useState(false);
+  const [hideCard2Prizes, setHideCard2Prizes] = useState(false);
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
       id: 1,
@@ -157,10 +158,14 @@ export default function Game() {
 
 
   const handleScratch = (cardId: number, index: number) => {
-    // Show warning popup if trying to scratch second card before first card is complete
+    // Show warning popup immediately when user starts scratching Card 2 before Card 1 is complete
     if (cardId === 2 && !firstCardComplete) {
       setShowWarningPopup(true);
-      setTimeout(() => setShowWarningPopup(false), 3000);
+      setHideCard2Prizes(true);
+      setTimeout(() => {
+        setShowWarningPopup(false);
+        setHideCard2Prizes(false);
+      }, 3000);
       return;
     }
     
@@ -347,6 +352,7 @@ export default function Game() {
                 onScratch={handleScratch}
                 onScratchComplete={() => handleCardScratchComplete(card.id)}
                 isFullyScratched={isCardFullyScratched(card)}
+                hidePrizes={card.id === 2 && hideCard2Prizes}
               />
             ))}
           </div>
@@ -501,6 +507,7 @@ interface ScratchOffCardProps {
   onScratch: (cardId: number, index: number) => void;
   onScratchComplete?: () => void;
   isFullyScratched: boolean;
+  hidePrizes?: boolean;
 }
 
 function ScratchOffCard({
@@ -508,6 +515,7 @@ function ScratchOffCard({
   onScratch,
   onScratchComplete,
   isFullyScratched,
+  hidePrizes = false,
 }: ScratchOffCardProps) {
   // Add custom font style for game page
   const wayComeFontStyle = {
@@ -590,34 +598,11 @@ function ScratchOffCard({
                       className="text-center w-full h-full flex flex-col justify-center"
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
-                      <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
-                        <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
-                          {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                      {hidePrizes ? (
+                        <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                          <div className="text-xs text-gray-600 font-bold">?</div>
                         </div>
-                        <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
-                          {card.prizes[index].split(' ').slice(2, 5).join(' ')}
-                        </div>
-                        <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
-                          {card.prizes[index].split(' ').slice(5).join(' ')}
-                        </div>
-                        <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
-                          {card.prizeValues[index]}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <ScratchCard
-                    width={56} // w-14 = 56px
-                    height={56}
-                    scratchPercent={40}
-                    onScratchComplete={() => handleCellScratch(index)}
-                  >
-                    <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
-                      <div
-                        className="text-center w-full h-full flex flex-col justify-center"
-                        style={{ fontFamily: "Montserrat, sans-serif" }}
-                      >
+                      ) : (
                         <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
                           <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(0, 2).join(' ')}
@@ -632,6 +617,41 @@ function ScratchOffCard({
                             {card.prizeValues[index]}
                           </div>
                         </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <ScratchCard
+                    width={56} // w-14 = 56px
+                    height={56}
+                    scratchPercent={40}
+                    onScratchComplete={() => handleCellScratch(index)}
+                  >
+                    <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
+                      <div
+                        className="text-center w-full h-full flex flex-col justify-center"
+                        style={{ fontFamily: "Montserrat, sans-serif" }}
+                      >
+                        {hidePrizes ? (
+                          <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                            <div className="text-xs text-gray-600 font-bold">?</div>
+                          </div>
+                        ) : (
+                          <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
+                            <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
+                              {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                            </div>
+                            <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
+                              {card.prizes[index].split(' ').slice(2, 5).join(' ')}
+                            </div>
+                            <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
+                              {card.prizes[index].split(' ').slice(5).join(' ')}
+                            </div>
+                            <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
+                              {card.prizeValues[index]}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </ScratchCard>
