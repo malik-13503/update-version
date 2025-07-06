@@ -1,6 +1,6 @@
 import { users, registrations, type User, type InsertUser, type Registration, type InsertRegistration } from "@shared/schema";
 import { db } from "./db";
-import { eq, count } from "drizzle-orm";
+import { eq, count, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -9,6 +9,8 @@ export interface IStorage {
   getRegistrationByEmail(email: string): Promise<Registration | undefined>;
   createRegistration(insertRegistration: InsertRegistration): Promise<Registration>;
   getRegistrationCount(): Promise<number>;
+  getAllRegistrations(): Promise<Registration[]>;
+  deleteRegistration(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -46,6 +48,15 @@ export class DatabaseStorage implements IStorage {
   async getRegistrationCount(): Promise<number> {
     const [result] = await db.select({ count: count() }).from(registrations);
     return Number(result.count);
+  }
+
+  async getAllRegistrations(): Promise<Registration[]> {
+    const results = await db.select().from(registrations).orderBy(desc(registrations.createdAt));
+    return results;
+  }
+
+  async deleteRegistration(id: number): Promise<void> {
+    await db.delete(registrations).where(eq(registrations.id, id));
   }
 }
 

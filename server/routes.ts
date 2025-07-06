@@ -49,6 +49,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes
+  app.get("/api/admin/registrations", async (req, res) => {
+    try {
+      const registrations = await storage.getAllRegistrations();
+      res.json(registrations);
+    } catch (error) {
+      console.error("Admin registrations error:", error);
+      res.status(500).json({ message: "Failed to fetch registrations" });
+    }
+  });
+
+  app.delete("/api/admin/registrations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid registration ID" });
+      }
+      
+      await storage.deleteRegistration(id);
+      res.json({ message: "Registration deleted successfully" });
+    } catch (error) {
+      console.error("Admin delete error:", error);
+      res.status(500).json({ message: "Failed to delete registration" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
