@@ -137,7 +137,7 @@ export default function Game() {
     });
     
     return (
-      <div className="fixed inset-0 pointer-events-none z-40">
+      <div className="fixed inset-0 pointer-events-none z-60">
         <style>{`
           @keyframes confetti-fall {
             0% {
@@ -411,7 +411,7 @@ export default function Game() {
 
       {/* Winner Modal */}
       {gameComplete && winnerCard && (
-        <div className="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 p-2 sm:p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-2 sm:p-4 rounded-3xl max-w-sm sm:max-w-md md:max-w-lg w-full mx-2 sm:mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="bg-white rounded-2xl p-3 sm:p-6 text-center relative overflow-hidden">
               
@@ -450,26 +450,12 @@ export default function Game() {
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-2 sm:p-3 rounded-xl mb-3 sm:mb-4 shadow-lg">
-                  <p className="text-xs sm:text-base font-bold" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    🎯 Reference Code: WINNER2024
-                  </p>
-                  <p className="text-xs sm:text-sm mt-1 opacity-90" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    Mention this code when you call!
-                  </p>
-                </div>
+
                 
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                  <button
-                    onClick={() => setGameComplete(false)}
-                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm"
-                    style={{ fontFamily: "Montserrat, sans-serif" }}
-                  >
-                    Continue Playing
-                  </button>
+                <div className="flex justify-center">
                   <button
                     onClick={() => setLocation('/')}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors text-sm sm:text-base"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     Back to Home
