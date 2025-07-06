@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ScratchCard from "@/components/ScratchCard";
 import logoPath from "@assets/logo_1751279296203.png";
-import headingImage from "@assets/heading_1751837138504.png";
 
 interface ScratchCardData {
   id: number;
@@ -42,7 +41,7 @@ export default function Game() {
   }
   
   const [, setLocation] = useLocation();
-  const [gameStarted, setGameStarted] = useState(false); // Start with play button
+  const [gameStarted, setGameStarted] = useState(true); // Start game directly
   const [showConfetti, setShowConfetti] = useState(false);
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
@@ -152,9 +151,7 @@ export default function Game() {
     );
   };
 
-  const handlePlayNow = () => {
-    setGameStarted(true);
-  };
+
 
   const handleScratch = (cardId: number, index: number) => {
     setCards((prev) =>
@@ -272,6 +269,44 @@ export default function Game() {
 
   return (
     <div className="min-h-screen bg-white">
+      <style>{`
+        /* Default desktop sizes */
+        .prize-text-line1 {
+          font-size: 6px;
+        }
+        .prize-text-line2, .prize-text-line3 {
+          font-size: 5px;
+        }
+        .prize-text-value {
+          font-size: 6px;
+        }
+        
+        /* Mobile sizes - even smaller */
+        @media (max-width: 768px) {
+          .prize-text-line1 {
+            font-size: 4px;
+          }
+          .prize-text-line2, .prize-text-line3 {
+            font-size: 3px;
+          }
+          .prize-text-value {
+            font-size: 4px;
+          }
+        }
+        
+        /* Extra small mobile */
+        @media (max-width: 480px) {
+          .prize-text-line1 {
+            font-size: 3px;
+          }
+          .prize-text-line2, .prize-text-line3 {
+            font-size: 2.5px;
+          }
+          .prize-text-value {
+            font-size: 3px;
+          }
+        }
+      `}</style>
       {/* Header Section with Logo */}
       <div className="px-4 py-4" style={{ backgroundColor: "#ffb22a" }}>
         <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -283,26 +318,17 @@ export default function Game() {
                 className="h-16 md:h-20 w-auto"
               />
             </div>
-            <div className="ml-4">
-              <h1
-                className="text-2xl md:text-4xl font-bold text-white"
-                style={{
-                  ...wayComeFontStyle,
-                  textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
-                }}
-              >
-                Done For You Pros
-              </h1>
-              <p
-                className="text-lg md:text-xl text-white"
-                style={{
-                  fontFamily: "Montserrat, sans-serif",
-                  textShadow: "1px 1px 2px rgba(0,0,0,0.5)",
-                }}
-              >
-                Scratch & Win Game
-              </p>
-            </div>
+          </div>
+          <div className="text-right">
+            <h2
+              className="text-lg md:text-2xl lg:text-3xl font-bold text-white"
+              style={{
+                ...wayComeFontStyle,
+                textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+              }}
+            >
+              $5 Million Instant Prizes
+            </h2>
           </div>
         </div>
       </div>
@@ -310,44 +336,53 @@ export default function Game() {
       {/* Game Introduction Section */}
       <div className="text-center py-8 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <img
-            src={headingImage}
-            alt="It's Time to Play Our Scratch & Win Game - 2 Chances to Win Amazing Prizes!"
-            className="mx-auto max-w-full h-auto"
-          />
+          <h1
+            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2"
+            style={{
+              ...wayComeFontStyle,
+              color: "#F76D46",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            IT'S TIME TO PLAY OUR SCRATCH &
+          </h1>
+          <h1
+            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4"
+            style={{
+              ...wayComeFontStyle,
+              color: "#F76D46",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            WIN GAME
+          </h1>
+          <h2
+            className="text-2xl md:text-3xl lg:text-4xl font-bold"
+            style={{
+              ...wayComeFontStyle,
+              color: "#2C5CDC",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            2 CHANCES TO WIN AMAZING PRIZES!
+          </h2>
         </div>
       </div>
 
       {/* Game Cards Section */}
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          {!gameStarted ? (
-            <div className="text-center">
-              <Button
-                onClick={handlePlayNow}
-                className="text-2xl md:text-4xl font-bold py-6 px-12 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105"
-                style={{
-                  background: "linear-gradient(45deg, #2C5CDC, #F76D46)",
-                  color: "white",
-                  fontFamily: "Montserrat, sans-serif",
-                }}
-              >
-                PLAY NOW
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-              {cards.map((card) => (
-                <ScratchOffCard
-                  key={card.id}
-                  card={card}
-                  onScratch={handleScratch}
-                  onScratchComplete={() => handleCardScratchComplete(card.id)}
-                  isFullyScratched={isCardFullyScratched(card)}
-                />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+            {cards.map((card) => (
+              <ScratchOffCard
+                key={card.id}
+                card={card}
+                onScratch={handleScratch}
+                onScratchComplete={() => handleCardScratchComplete(card.id)}
+                isFullyScratched={isCardFullyScratched(card)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -566,16 +601,16 @@ function ScratchOffCard({
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
                       <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
-                        <div className="text-[6px] font-bold leading-none mb-0.5 max-w-full break-words">
+                        <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(0, 2).join(' ')}
                         </div>
-                        <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
+                        <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(2, 5).join(' ')}
                         </div>
-                        <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
+                        <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
                           {card.prizes[index].split(' ').slice(5).join(' ')}
                         </div>
-                        <div className="text-[6px] font-bold text-green-600 leading-none max-w-full">
+                        <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
                           {card.prizeValues[index]}
                         </div>
                       </div>
@@ -594,16 +629,16 @@ function ScratchOffCard({
                         style={{ fontFamily: "Montserrat, sans-serif" }}
                       >
                         <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
-                          <div className="text-[6px] font-bold leading-none mb-0.5 max-w-full break-words">
+                          <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(0, 2).join(' ')}
                           </div>
-                          <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
+                          <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(2, 5).join(' ')}
                           </div>
-                          <div className="text-[5px] leading-none mb-0.5 max-w-full break-words">
+                          <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
                             {card.prizes[index].split(' ').slice(5).join(' ')}
                           </div>
-                          <div className="text-[6px] font-bold text-green-600 leading-none max-w-full">
+                          <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
                             {card.prizeValues[index]}
                           </div>
                         </div>
