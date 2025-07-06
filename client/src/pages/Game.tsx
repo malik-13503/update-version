@@ -342,7 +342,6 @@ export default function Game() {
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
-              textShadow: "4px 4px 8px rgba(0,0,0,0.3)",
               letterSpacing: "2px",
               lineHeight: "1.1",
             }}
@@ -354,7 +353,6 @@ export default function Game() {
             style={{
               ...wayComeFontStyle,
               color: "#F76D46",
-              textShadow: "4px 4px 8px rgba(0,0,0,0.3)",
               letterSpacing: "2px",
               lineHeight: "1.1",
             }}
@@ -366,7 +364,6 @@ export default function Game() {
             style={{
               ...wayComeFontStyle,
               color: "#2C5CDC",
-              textShadow: "3px 3px 6px rgba(0,0,0,0.3)",
               letterSpacing: "1px",
             }}
           >
