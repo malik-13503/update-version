@@ -39,7 +39,7 @@ export default function Game() {
       document.head.appendChild(style);
     }
   }
-  
+
   const [, setLocation] = useLocation();
   const [gameStarted, setGameStarted] = useState(true); // Start game directly
   const [showConfetti, setShowConfetti] = useState(false);
@@ -52,7 +52,7 @@ export default function Game() {
       scratches: new Array(9).fill(false),
       prizes: [
         "Free Standing Refrigerator New Water Line Installation",
-        "Master Bathroom Sink New Hot Water Valve & Line Installation", 
+        "Master Bathroom Sink New Hot Water Valve & Line Installation",
         "Washer New Hot & Cold Water Lines Installation",
         "Dishwasher New Water Valve Installation",
         "Kitchen Sink New Hot Water Valve & Line Installation",
@@ -63,7 +63,7 @@ export default function Game() {
       ],
       prizeValues: [
         "$197value",
-        "$397value", 
+        "$397value",
         "$247value",
         "$197value",
         "$397value",
@@ -79,7 +79,7 @@ export default function Game() {
       scratches: new Array(9).fill(false),
       prizes: [
         "Gas Dryer New Gas Line Installation",
-        "Dishwasher New Water Valve Installation", 
+        "Dishwasher New Water Valve Installation",
         "Dishwasher New Water Valve Installation",
         "Master Bathroom Sink New Hot Water Valve & Line Installation",
         "Over The Range Microwave & Hood Venting Retaped Pro Style",
@@ -109,24 +109,24 @@ export default function Game() {
   const Confetti = () => {
     const confettiPieces = Array.from({ length: 80 }, (_, i) => {
       // Use only brand colors
-      const colors = ['#2C5CDC', '#F76D46', '#ffb22a'];
+      const colors = ["#2C5CDC", "#F76D46", "#ffb22a"];
       const color = colors[Math.floor(Math.random() * colors.length)];
       const size = Math.random() * 12 + 6;
       const leftPos = Math.random() * 100;
       const animationDelay = Math.random() * 3;
       const animationDuration = 3 + Math.random() * 2;
-      
+
       return (
         <div
           key={i}
           className="absolute"
           style={{
             left: `${leftPos}%`,
-            top: '-20px',
+            top: "-20px",
             backgroundColor: color,
             width: `${size}px`,
             height: `${size}px`,
-            borderRadius: Math.random() > 0.7 ? '50%' : '0%',
+            borderRadius: Math.random() > 0.7 ? "50%" : "0%",
             animationDelay: `${animationDelay}s`,
             animationDuration: `${animationDuration}s`,
             transform: `rotate(${Math.random() * 360}deg)`,
@@ -135,7 +135,7 @@ export default function Game() {
         />
       );
     });
-    
+
     return (
       <div className="fixed inset-0 pointer-events-none z-[60]">
         <style>{`
@@ -155,8 +155,6 @@ export default function Game() {
     );
   };
 
-
-
   const handleScratch = (cardId: number, index: number) => {
     // Completely block scratching Card 2 until Card 1 is complete
     if (cardId === 2 && !firstCardComplete) {
@@ -164,7 +162,7 @@ export default function Game() {
       setHideCard2Prizes(true);
       return;
     }
-    
+
     setCards((prev) =>
       prev.map((card) => {
         if (card.id === cardId) {
@@ -177,10 +175,12 @@ export default function Game() {
     );
 
     // Check if this specific card is fully scratched
-    const updatedCard = cards.find(card => card.id === cardId);
+    const updatedCard = cards.find((card) => card.id === cardId);
     if (updatedCard) {
-      const cardFullyScratched = updatedCard.scratches.every((_, i) => i === index || updatedCard.scratches[i]);
-      
+      const cardFullyScratched = updatedCard.scratches.every(
+        (_, i) => i === index || updatedCard.scratches[i],
+      );
+
       // If it's the first card and it's fully scratched
       if (cardId === 1 && cardFullyScratched) {
         setFirstCardComplete(true);
@@ -188,20 +188,20 @@ export default function Game() {
         setShowWarningPopup(false);
         setHideCard2Prizes(false);
       }
-      
+
       // If it's the second card (winner card) and it's fully scratched
       if (cardId === 2 && cardFullyScratched) {
         // Check for three matching "Dishwasher" prizes
-        const dishwasherCount = updatedCard.prizes.filter(prize => 
-          prize.includes("Dishwasher New Water Valve Installation")
+        const dishwasherCount = updatedCard.prizes.filter((prize) =>
+          prize.includes("Dishwasher New Water Valve Installation"),
         ).length;
-        
+
         if (dishwasherCount >= 3) {
           setWinnerCard(updatedCard);
           setShowConfetti(true);
           setTimeout(() => setGameComplete(true), 1000);
           // Stop confetti after 5 seconds
-          setTimeout(() => setShowConfetti(false), 5000);
+          setTimeout(() => setShowConfetti(false), 10000);
         } else {
           // Second card complete but not a winner
           setTimeout(() => setGameComplete(true), 1000);
@@ -211,24 +211,24 @@ export default function Game() {
   };
 
   const handleCardScratchComplete = (cardId: number) => {
-    const card = cards.find(c => c.id === cardId);
+    const card = cards.find((c) => c.id === cardId);
     if (card && card.isWinner) {
       setWinnerCard(card);
       setTimeout(() => setGameComplete(true), 500);
     }
   };
 
-
-
   const isCardFullyScratched = (card: ScratchCardData) => {
     return card.scratches.every((scratch) => scratch);
   };
 
   const resetGame = () => {
-    setCards(prev => prev.map(card => ({
-      ...card,
-      scratches: new Array(9).fill(false)
-    })));
+    setCards((prev) =>
+      prev.map((card) => ({
+        ...card,
+        scratches: new Array(9).fill(false),
+      })),
+    );
     setGameComplete(false);
     setWinnerCard(null);
     setFirstCardComplete(false);
@@ -298,7 +298,15 @@ export default function Game() {
                 letterSpacing: "1px",
               }}
             >
-              $5 MILLION <span style={{ color: "#000", textShadow: "2px 2px 4px rgba(255,255,255,0.8)" }}>INSTANT PRIZES</span>
+              $5 MILLION{" "}
+              <span
+                style={{
+                  color: "#000",
+                  textShadow: "2px 2px 4px rgba(255,255,255,0.8)",
+                }}
+              >
+                INSTANT PRIZES
+              </span>
             </h2>
           </div>
         </div>
@@ -354,10 +362,14 @@ export default function Game() {
                 onScratchComplete={() => handleCardScratchComplete(card.id)}
                 isFullyScratched={isCardFullyScratched(card)}
                 hidePrizes={card.id === 2 && hideCard2Prizes}
-                onInitialCardTouch={card.id === 2 && !firstCardComplete ? () => {
-                  setShowWarningPopup(true);
-                  setHideCard2Prizes(true);
-                } : undefined}
+                onInitialCardTouch={
+                  card.id === 2 && !firstCardComplete
+                    ? () => {
+                        setShowWarningPopup(true);
+                        setHideCard2Prizes(true);
+                      }
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -388,13 +400,20 @@ export default function Game() {
           <div className="bg-white rounded-2xl p-4 sm:p-6 max-w-sm mx-4 shadow-2xl border-4 border-orange-500">
             <div className="text-center">
               <div className="text-4xl mb-3">⚠️</div>
-              <h3 className="text-lg sm:text-xl font-bold mb-2 text-orange-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+              <h3
+                className="text-lg sm:text-xl font-bold mb-2 text-orange-600"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
                 Hold On!
               </h3>
-              <p className="text-sm sm:text-base text-gray-700 mb-4" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                Please scratch the first card completely before moving to the second card.
+              <p
+                className="text-sm sm:text-base text-gray-700 mb-4"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                Please scratch the first card completely before moving to the
+                second card.
               </p>
-              <button 
+              <button
                 onClick={() => {
                   setShowWarningPopup(false);
                   setHideCard2Prizes(false);
@@ -414,47 +433,68 @@ export default function Game() {
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-2 sm:p-4 rounded-3xl max-w-sm sm:max-w-md md:max-w-lg w-full mx-2 sm:mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="bg-white rounded-2xl p-3 sm:p-6 text-center relative overflow-hidden">
-              
               <div className="relative z-10">
                 {/* Trophy and celebration */}
-                <div className="text-3xl sm:text-5xl mb-2 sm:mb-4 animate-bounce">🏆</div>
+                <div className="text-3xl sm:text-5xl mb-2 sm:mb-4 animate-bounce">
+                  🏆
+                </div>
                 <div className="text-xl sm:text-3xl mb-2 sm:mb-4">🎉 🎊 🎉</div>
-                
-                <h3 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600" style={wayComeFontStyle}>
+
+                <h3
+                  className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600"
+                  style={wayComeFontStyle}
+                >
                   WINNER!
                 </h3>
-                
+
                 <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-inner border-2 border-green-200">
-                  <h4 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-green-800" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <h4
+                    className="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-green-800"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
                     🎁 CONGRATULATIONS!
                   </h4>
-                  <p className="text-xs sm:text-base font-semibold text-blue-600 mb-1 sm:mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    You matched 3 "Dishwasher New Water Valve Installation" prizes!
+                  <p
+                    className="text-xs sm:text-base font-semibold text-blue-600 mb-1 sm:mb-2"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
+                    You matched 3 "Dishwasher New Water Valve Installation"
+                    prizes!
                   </p>
-                  <p className="text-lg sm:text-2xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                  <p
+                    className="text-lg sm:text-2xl font-bold text-green-600"
+                    style={{ fontFamily: "Montserrat, sans-serif" }}
+                  >
                     TOTAL VALUE: $591
                   </p>
                 </div>
-                
+
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-lg">
-                  <h4 className="text-base sm:text-xl font-bold mb-2 sm:mb-3" style={wayComeFontStyle}>
+                  <h4
+                    className="text-base sm:text-xl font-bold mb-2 sm:mb-3"
+                    style={wayComeFontStyle}
+                  >
                     🔥 CLAIM YOUR PRIZE NOW!
                   </h4>
                   <div className="bg-white text-gray-900 p-2 sm:p-3 rounded-lg shadow-inner mb-2 sm:mb-3">
-                    <p className="text-sm sm:text-lg font-bold text-blue-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    <p
+                      className="text-sm sm:text-lg font-bold text-blue-600"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
                       📞 CALL NOW
                     </p>
-                    <p className="text-lg sm:text-2xl font-bold text-green-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                    <p
+                      className="text-lg sm:text-2xl font-bold text-green-600"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
                       (310) 295-6355
                     </p>
                   </div>
                 </div>
-                
 
-                
                 <div className="flex justify-center">
                   <button
-                    onClick={() => setLocation('/')}
+                    onClick={() => setLocation("/")}
                     className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors text-sm sm:text-base"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
@@ -475,10 +515,16 @@ export default function Game() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-lg text-center max-w-md mx-4">
             <div className="text-6xl mb-4">😢</div>
-            <h3 className="text-2xl font-bold mb-4 text-gray-600" style={wayComeFontStyle}>
+            <h3
+              className="text-2xl font-bold mb-4 text-gray-600"
+              style={wayComeFontStyle}
+            >
               Try Again!
             </h3>
-            <p className="text-lg mb-6" style={{ fontFamily: "Montserrat, sans-serif" }}>
+            <p
+              className="text-lg mb-6"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
               No winning matches this time, but you can try again!
             </p>
             <div className="flex space-x-4">
@@ -591,7 +637,10 @@ function ScratchOffCard({
           {/* Scratch Grid */}
           <div className="grid grid-cols-3 gap-1 mb-3 md:mb-4">
             {Array.from({ length: 9 }).map((_, index) => (
-              <div key={index} className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative overflow-hidden">
+              <div
+                key={index}
+                className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 border-2 border-yellow-400 relative overflow-hidden"
+              >
                 {scratchedCells[index] ? (
                   <div className="w-full h-full bg-yellow-400 text-black flex items-center justify-center p-0.5 overflow-hidden">
                     <div
@@ -600,18 +649,26 @@ function ScratchOffCard({
                     >
                       {hidePrizes ? (
                         <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                          <div className="text-xs text-gray-600 font-bold">?</div>
+                          <div className="text-xs text-gray-600 font-bold">
+                            ?
+                          </div>
                         </div>
                       ) : (
                         <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
                           <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
-                            {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")}
                           </div>
                           <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
-                            {card.prizes[index].split(' ').slice(2, 5).join(' ')}
+                            {card.prizes[index]
+                              .split(" ")
+                              .slice(2, 5)
+                              .join(" ")}
                           </div>
                           <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
-                            {card.prizes[index].split(' ').slice(5).join(' ')}
+                            {card.prizes[index].split(" ").slice(5).join(" ")}
                           </div>
                           <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
                             {card.prizeValues[index]}
@@ -635,18 +692,26 @@ function ScratchOffCard({
                       >
                         {hidePrizes ? (
                           <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                            <div className="text-xs text-gray-600 font-bold">?</div>
+                            <div className="text-xs text-gray-600 font-bold">
+                              ?
+                            </div>
                           </div>
                         ) : (
                           <div className="text-center p-0.5 w-full h-full flex flex-col justify-center items-center">
                             <div className="prize-text-line1 font-bold leading-none mb-0.5 max-w-full break-words">
-                              {card.prizes[index].split(' ').slice(0, 2).join(' ')}
+                              {card.prizes[index]
+                                .split(" ")
+                                .slice(0, 2)
+                                .join(" ")}
                             </div>
                             <div className="prize-text-line2 leading-none mb-0.5 max-w-full break-words">
-                              {card.prizes[index].split(' ').slice(2, 5).join(' ')}
+                              {card.prizes[index]
+                                .split(" ")
+                                .slice(2, 5)
+                                .join(" ")}
                             </div>
                             <div className="prize-text-line3 leading-none mb-0.5 max-w-full break-words">
-                              {card.prizes[index].split(' ').slice(5).join(' ')}
+                              {card.prizes[index].split(" ").slice(5).join(" ")}
                             </div>
                             <div className="prize-text-value font-bold text-green-600 leading-none max-w-full">
                               {card.prizeValues[index]}

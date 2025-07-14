@@ -303,23 +303,23 @@ export default function RegistrationForm({
                     <Button
                       type="submit"
                       disabled={!videoWatched || registerMutation.isPending}
-                      className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-6 px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
+                      className={`relative w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-4 sm:py-5 md:py-6 px-4 sm:px-6 md:px-8 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-2xl text-lg ${
                         !videoWatched
                           ? "from-gray-400 to-gray-500 cursor-not-allowed transform-none"
                           : "hover:shadow-xl"
                       }`}
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
-                      <div className="flex items-center justify-center space-x-2 md:space-x-3">
-                        <Video size={18} className="md:w-6 md:h-6 flex-shrink-0" />
-                        <span className="font-black text-sm md:text-lg lg:text-xl text-center leading-tight px-1">
+                      <div className="flex items-center justify-center space-x-1 sm:space-x-2 md:space-x-3">
+                        <Video size={20} className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex-shrink-0" />
+                        <span className="font-black text-xs sm:text-sm md:text-lg lg:text-xl text-center leading-tight px-1">
                           {registerMutation.isPending
                             ? "REGISTERING..."
                             : videoWatched
                               ? "REGISTER TO PLAY"
                               : "WATCH VIDEO TO UNLOCK"}
                         </span>
-                        <Trophy size={18} className="md:w-6 md:h-6 flex-shrink-0" />
+                        <Trophy size={20} className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 flex-shrink-0" />
                       </div>
                     </Button>
                   </div>
