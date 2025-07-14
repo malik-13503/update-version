@@ -25,6 +25,7 @@ export default function ScratchCard({
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const [scratchPoints, setScratchPoints] = useState<Array<{ x: number; y: number; size: number }>>([]);
+  const [fingerPosition, setFingerPosition] = useState({ x: 0, y: 0, visible: false });
 
   useEffect(() => {
     if (isScratched) {
@@ -42,27 +43,9 @@ export default function ScratchCard({
     canvas.width = width;
     canvas.height = height;
 
-    // Draw realistic scratch overlay with metallic gradient
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "#c0c0c0");
-    gradient.addColorStop(0.2, "#e8e8e8");
-    gradient.addColorStop(0.4, "#a0a0a0");
-    gradient.addColorStop(0.6, "#d0d0d0");
-    gradient.addColorStop(0.8, "#b0b0b0");
-    gradient.addColorStop(1, "#989898");
-    
-    ctx.fillStyle = gradient;
+    // Draw scratch overlay with previous gray color
+    ctx.fillStyle = "#4a5568";
     ctx.fillRect(0, 0, width, height);
-
-    // Add subtle texture pattern
-    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-    for (let i = 0; i < width; i += 4) {
-      for (let j = 0; j < height; j += 4) {
-        if (Math.random() > 0.7) {
-          ctx.fillRect(i, j, 1, 1);
-        }
-      }
-    }
 
     // Set up for scratching
     ctx.globalCompositeOperation = "destination-out";
@@ -114,12 +97,17 @@ export default function ScratchCard({
     if (!isDrawing || isCompleted) return;
 
     const pos = getEventPos(e);
+    setFingerPosition({ x: pos.x, y: pos.y, visible: true });
+    
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
       // Calculate distance from last point for speed-based brush size
       const distance = Math.sqrt(
         Math.pow(pos.x - lastPoint.x, 2) + Math.pow(pos.y - lastPoint.y, 2)
       );
+      
+      // Slow down scratching - only scratch if movement is significant
+      if (distance < 5) return;
       
       // Adjust brush size based on movement speed (slower = larger brush)
       const baseSize = 20;
@@ -154,6 +142,7 @@ export default function ScratchCard({
   const endScratch = () => {
     if (!isDrawing) return;
     setIsDrawing(false);
+    setFingerPosition({ x: 0, y: 0, visible: false });
 
     // Check if enough has been scratched
     const canvas = canvasRef.current;
@@ -176,6 +165,17 @@ export default function ScratchCard({
     }
   };
 
+  const handleMouseMove = (e: any) => {
+    if (!isDrawing) {
+      const pos = getEventPos(e);
+      setFingerPosition({ x: pos.x, y: pos.y, visible: true });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setFingerPosition({ x: 0, y: 0, visible: false });
+  };
+
   if (isCompleted) {
     return <div className="w-full h-full">{children}</div>;
   }
@@ -185,11 +185,11 @@ export default function ScratchCard({
       <div className="absolute inset-0">{children}</div>
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 cursor-crosshair touch-none select-none"
+        className="absolute inset-0 cursor-none touch-none select-none"
         onMouseDown={startScratch}
-        onMouseMove={scratch}
+        onMouseMove={isDrawing ? scratch : handleMouseMove}
         onMouseUp={endScratch}
-        onMouseLeave={endScratch}
+        onMouseLeave={handleMouseLeave}
         onTouchStart={(e) => {
           e.preventDefault();
           startScratch(e);
@@ -209,6 +209,19 @@ export default function ScratchCard({
           userSelect: "none"
         }}
       />
+      {/* Finger cursor */}
+      {fingerPosition.visible && (
+        <div
+          className="absolute pointer-events-none z-10 transition-all duration-75"
+          style={{
+            left: fingerPosition.x - 15,
+            top: fingerPosition.y - 20,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <div className="text-2xl">👆</div>
+        </div>
+      )}
     </div>
   );
 }

@@ -130,6 +130,9 @@ The application follows a monorepo structure with separate client and server dir
 - July 14, 2025. Improved scratching with speed-based brush sizing and smoother quadratic curves
 - July 14, 2025. Added touch event optimization and better cursor feedback for scratch interaction
 - July 14, 2025. Reduced scratch completion threshold to 40% for more responsive gameplay
+- July 14, 2025. Restored previous gray color (#4a5568) for scratch overlay as requested
+- July 14, 2025. Added finger cursor (👆) that follows mouse/touch during scratching
+- July 14, 2025. Implemented slower scratching speed by requiring minimum movement distance
 
 ## User Preferences
 
