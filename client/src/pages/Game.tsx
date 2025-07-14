@@ -105,8 +105,19 @@ export default function Game() {
   const [winnerCard, setWinnerCard] = useState<ScratchCardData | null>(null);
   const [firstCardComplete, setFirstCardComplete] = useState(false);
 
-  // Confetti component with brand colors
+  // Confetti component with brand colors that loops continuously
   const Confetti = () => {
+    const [confettiKey, setConfettiKey] = useState(0);
+
+    // Regenerate confetti pieces every 5 seconds to create continuous effect
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setConfettiKey(prev => prev + 1);
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }, []);
+
     const confettiPieces = Array.from({ length: 80 }, (_, i) => {
       // Use only brand colors
       const colors = ["#2C5CDC", "#F76D46", "#ffb22a"];
@@ -118,7 +129,7 @@ export default function Game() {
 
       return (
         <div
-          key={i}
+          key={`${confettiKey}-${i}`}
           className="absolute"
           style={{
             left: `${leftPos}%`,
@@ -200,8 +211,6 @@ export default function Game() {
           setWinnerCard(updatedCard);
           setShowConfetti(true);
           setTimeout(() => setGameComplete(true), 1000);
-          // Stop confetti after 5 seconds
-          setTimeout(() => setShowConfetti(false), 10000);
         } else {
           // Second card complete but not a winner
           setTimeout(() => setGameComplete(true), 1000);
@@ -494,7 +503,10 @@ export default function Game() {
 
                 <div className="flex justify-center">
                   <button
-                    onClick={() => setLocation("/")}
+                    onClick={() => {
+                      setShowConfetti(false);
+                      setLocation("/");
+                    }}
                     className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 md:py-5 px-8 sm:px-10 md:px-12 rounded-lg transition-colors text-base sm:text-lg md:text-xl"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >

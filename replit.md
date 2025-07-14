@@ -128,6 +128,7 @@ The application follows a monorepo structure with separate client and server dir
 - July 14, 2025. Removed video completion message overlay to avoid interrupting video viewing experience
 - July 14, 2025. Enhanced desktop popup responsiveness with larger sizes and better text scaling for 1080p+ screens
 - July 14, 2025. Balanced popup sizing to be more responsive across all screen sizes without being too large on desktop
+- July 14, 2025. Enhanced confetti to loop continuously until winner popup is closed, creating more celebratory effect
 
 ## User Preferences
 
