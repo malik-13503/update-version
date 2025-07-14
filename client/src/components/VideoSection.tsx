@@ -9,7 +9,7 @@ interface VideoSectionProps {
 export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [showComplete, setShowComplete] = useState(false);
+  const [videoCompleted, setVideoCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -32,19 +32,17 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
       setProgress(progressPercent);
       
       // Enable form when video is 80% complete
-      if (progressPercent >= 80 && !showComplete) {
+      if (progressPercent >= 80 && !videoCompleted) {
         onVideoComplete();
-        setShowComplete(true);
-        setTimeout(() => setShowComplete(false), 3000);
+        setVideoCompleted(true);
       }
     }
   };
 
   const handleVideoEnd = () => {
-    if (!showComplete) {
+    if (!videoCompleted) {
       onVideoComplete();
-      setShowComplete(true);
-      setTimeout(() => setShowComplete(false), 3000);
+      setVideoCompleted(true);
     }
   };
 
@@ -130,16 +128,7 @@ export default function VideoSection({ onVideoComplete }: VideoSectionProps) {
                 style={{ width: `${progress}%` }}
               ></div>
               
-              {/* Video completion message */}
-              {showComplete && (
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-green-600 bg-opacity-95 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <i className="fas fa-check-circle text-6xl mb-4 animate-bounce"></i>
-                    <h3 className="text-2xl font-bold mb-2">Video Complete!</h3>
-                    <p className="text-lg">You can now register to play the game!</p>
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
         </div>

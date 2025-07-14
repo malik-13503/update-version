@@ -125,6 +125,7 @@ The application follows a monorepo structure with separate client and server dir
 - July 14, 2025. Replaced YouTube video with local video file for faster loading
 - July 14, 2025. Optimized video player with HTML5 video element and metadata preloading
 - July 14, 2025. Added proper video progress tracking and completion detection for local video
+- July 14, 2025. Removed video completion message overlay to avoid interrupting video viewing experience
 
 ## User Preferences
 
