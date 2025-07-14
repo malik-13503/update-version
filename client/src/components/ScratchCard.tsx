@@ -24,8 +24,10 @@ export default function ScratchCard({
   const [isCompleted, setIsCompleted] = useState(isScratched);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
-  const [scratchPoints, setScratchPoints] = useState<Array<{ x: number; y: number; size: number }>>([]);
   const [fingerPosition, setFingerPosition] = useState({ x: 0, y: 0, visible: false });
+  const [scratchIntensity, setScratchIntensity] = useState(1);
+  const lastTimeRef = useRef<number>(0);
+  const velocityRef = useRef<number>(0);
 
   useEffect(() => {
     if (isScratched) {
@@ -43,9 +45,29 @@ export default function ScratchCard({
     canvas.width = width;
     canvas.height = height;
 
-    // Draw scratch overlay with previous gray color
+    // Draw scratch overlay with textured background
     ctx.fillStyle = "#4a5568";
     ctx.fillRect(0, 0, width, height);
+
+    // Add texture pattern for more realistic scratch surface
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    for (let i = 0; i < width; i += 6) {
+      for (let j = 0; j < height; j += 6) {
+        if (Math.random() > 0.8) {
+          ctx.fillRect(i, j, 2, 2);
+        }
+      }
+    }
+
+    // Add subtle highlight lines
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < width; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + 10, height);
+      ctx.stroke();
+    }
 
     // Set up for scratching
     ctx.globalCompositeOperation = "destination-out";
@@ -79,64 +101,104 @@ export default function ScratchCard({
     setIsDrawing(true);
     const pos = getEventPos(e);
     setLastPoint(pos);
+    setFingerPosition({ x: pos.x, y: pos.y, visible: true });
     
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
-      // Start with a larger brush size for initial touch
-      ctx.lineWidth = 25;
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
+      // Create multiple scratch marks for more realistic initial touch
+      const scratchSize = 20;
       
-      // Create a circular scratch at the starting point
-      ctx.arc(pos.x, pos.y, 12, 0, 2 * Math.PI);
+      // Main scratch mark
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, scratchSize, 0, 2 * Math.PI);
       ctx.fill();
+      
+      // Add irregular scratch patterns around the main touch
+      for (let i = 0; i < 4; i++) {
+        const angle = (i * Math.PI) / 2 + Math.random() * 0.5;
+        const distance = 8 + Math.random() * 12;
+        const scratchX = pos.x + Math.cos(angle) * distance;
+        const scratchY = pos.y + Math.sin(angle) * distance;
+        
+        ctx.beginPath();
+        ctx.arc(scratchX, scratchY, 6 + Math.random() * 8, 0, 2 * Math.PI);
+        ctx.fill();
+      }
     }
+    
+    lastTimeRef.current = Date.now();
+    velocityRef.current = 0;
   };
 
   const scratch = (e: any) => {
     if (!isDrawing || isCompleted) return;
 
     const pos = getEventPos(e);
+    const currentTime = Date.now();
+    
+    // Calculate velocity and adjust scratching based on speed
+    const distance = Math.sqrt(
+      Math.pow(pos.x - lastPoint.x, 2) + Math.pow(pos.y - lastPoint.y, 2)
+    );
+    const timeDelta = currentTime - lastTimeRef.current;
+    const velocity = timeDelta > 0 ? distance / timeDelta : 0;
+    
+    // Update finger position
     setFingerPosition({ x: pos.x, y: pos.y, visible: true });
+    
+    // Only scratch if there's significant movement
+    if (distance < 3) return;
     
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
-      // Calculate distance from last point for speed-based brush size
-      const distance = Math.sqrt(
-        Math.pow(pos.x - lastPoint.x, 2) + Math.pow(pos.y - lastPoint.y, 2)
-      );
+      // Dynamic brush size based on velocity (faster = smaller, slower = larger)
+      const baseSize = 18;
+      const velocityFactor = Math.min(velocity * 50, 2);
+      const brushSize = Math.max(baseSize - velocityFactor * 4, 8);
       
-      // Slow down scratching - only scratch if movement is significant
-      if (distance < 5) return;
+      // Create realistic scratching with multiple strokes
+      const steps = Math.max(Math.ceil(distance / 4), 1);
       
-      // Adjust brush size based on movement speed (slower = larger brush)
-      const baseSize = 20;
-      const speedFactor = Math.min(distance / 10, 3);
-      const brushSize = Math.max(baseSize - speedFactor * 5, 12);
-      
-      ctx.lineWidth = brushSize;
-      
-      // Use quadratic curves for smoother lines
-      const midX = (lastPoint.x + pos.x) / 2;
-      const midY = (lastPoint.y + pos.y) / 2;
-      
-      ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, midX, midY);
-      ctx.stroke();
-      
-      // Add small circles along the path for better coverage
-      const steps = Math.ceil(distance / 8);
       for (let i = 0; i < steps; i++) {
         const ratio = i / steps;
         const x = lastPoint.x + (pos.x - lastPoint.x) * ratio;
         const y = lastPoint.y + (pos.y - lastPoint.y) * ratio;
         
+        // Main scratch stroke
         ctx.beginPath();
-        ctx.arc(x, y, brushSize / 2, 0, 2 * Math.PI);
+        ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
         ctx.fill();
+        
+        // Add random scratch variations for texture
+        if (velocity > 0.1) {
+          for (let j = 0; j < 2; j++) {
+            const offsetX = x + (Math.random() - 0.5) * 15;
+            const offsetY = y + (Math.random() - 0.5) * 15;
+            const smallBrush = brushSize * (0.3 + Math.random() * 0.4);
+            
+            ctx.beginPath();
+            ctx.arc(offsetX, offsetY, smallBrush, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        }
       }
+      
+      // Connect points with natural curves
+      ctx.beginPath();
+      ctx.lineWidth = brushSize * 0.8;
+      ctx.moveTo(lastPoint.x, lastPoint.y);
+      
+      const controlX = (lastPoint.x + pos.x) / 2 + (Math.random() - 0.5) * 10;
+      const controlY = (lastPoint.y + pos.y) / 2 + (Math.random() - 0.5) * 10;
+      
+      ctx.quadraticCurveTo(controlX, controlY, pos.x, pos.y);
+      ctx.stroke();
       
       setLastPoint(pos);
     }
+    
+    lastTimeRef.current = currentTime;
+    velocityRef.current = velocity;
   };
 
   const endScratch = () => {
@@ -166,14 +228,17 @@ export default function ScratchCard({
   };
 
   const handleMouseMove = (e: any) => {
+    const pos = getEventPos(e);
     if (!isDrawing) {
-      const pos = getEventPos(e);
       setFingerPosition({ x: pos.x, y: pos.y, visible: true });
     }
   };
 
   const handleMouseLeave = () => {
     setFingerPosition({ x: 0, y: 0, visible: false });
+    if (isDrawing) {
+      setIsDrawing(false);
+    }
   };
 
   if (isCompleted) {
@@ -212,14 +277,20 @@ export default function ScratchCard({
       {/* Finger cursor */}
       {fingerPosition.visible && (
         <div
-          className="absolute pointer-events-none z-10 transition-all duration-75"
+          className="absolute pointer-events-none z-10 transition-all duration-100 ease-out"
           style={{
-            left: fingerPosition.x - 15,
-            top: fingerPosition.y - 20,
+            left: fingerPosition.x,
+            top: fingerPosition.y,
             transform: 'translate(-50%, -50%)',
           }}
         >
-          <div className="text-2xl">👆</div>
+          <div className={`text-3xl ${isDrawing ? 'scale-110' : 'scale-100'} transition-transform duration-150`}>
+            👆
+          </div>
+          {isDrawing && (
+            <div className="absolute inset-0 -z-10 bg-yellow-400 rounded-full opacity-30 animate-pulse" 
+                 style={{ width: '40px', height: '40px', left: '-20px', top: '-20px' }} />
+          )}
         </div>
       )}
     </div>

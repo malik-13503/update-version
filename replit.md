@@ -133,6 +133,10 @@ The application follows a monorepo structure with separate client and server dir
 - July 14, 2025. Restored previous gray color (#4a5568) for scratch overlay as requested
 - July 14, 2025. Added finger cursor (👆) that follows mouse/touch during scratching
 - July 14, 2025. Implemented slower scratching speed by requiring minimum movement distance
+- July 14, 2025. Enhanced scratch card with realistic texture patterns and subtle highlight lines
+- July 14, 2025. Added velocity-based scratching physics with dynamic brush sizing
+- July 14, 2025. Improved finger cursor with scaling animation and glow effect during scratching
+- July 14, 2025. Added irregular scratch patterns and random variations for more natural feel
 
 ## User Preferences
 
