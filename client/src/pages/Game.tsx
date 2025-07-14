@@ -430,61 +430,61 @@ export default function Game() {
 
       {/* Winner Modal */}
       {gameComplete && winnerCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
-          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-2 sm:p-4 rounded-3xl max-w-sm sm:max-w-md md:max-w-lg w-full mx-2 sm:mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="bg-white rounded-2xl p-3 sm:p-6 text-center relative overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4 lg:p-6">
+          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-2 sm:p-4 lg:p-6 rounded-3xl max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl w-full mx-2 sm:mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 xl:p-10 text-center relative overflow-hidden">
               <div className="relative z-10">
                 {/* Trophy and celebration */}
-                <div className="text-3xl sm:text-5xl mb-2 sm:mb-4 animate-bounce">
+                <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-6 animate-bounce">
                   🏆
                 </div>
-                <div className="text-xl sm:text-3xl mb-2 sm:mb-4">🎉 🎊 🎉</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl mb-3 sm:mb-4 lg:mb-6">🎉 🎊 🎉</div>
 
                 <h3
-                  className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600"
+                  className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 lg:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600"
                   style={wayComeFontStyle}
                 >
                   WINNER!
                 </h3>
 
-                <div className="bg-gradient-to-r from-green-50 to-green-100 p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-inner border-2 border-green-200">
+                <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 sm:p-5 lg:p-6 xl:p-8 rounded-xl mb-4 sm:mb-5 lg:mb-6 shadow-inner border-2 border-green-200">
                   <h4
-                    className="text-base sm:text-xl font-bold mb-1 sm:mb-2 text-green-800"
+                    className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-2 sm:mb-3 lg:mb-4 text-green-800"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     🎁 CONGRATULATIONS!
                   </h4>
                   <p
-                    className="text-xs sm:text-base font-semibold text-blue-600 mb-1 sm:mb-2"
+                    className="text-sm sm:text-base lg:text-lg xl:text-xl font-semibold text-blue-600 mb-2 sm:mb-3 lg:mb-4"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     You matched 3 "Dishwasher New Water Valve Installation"
                     prizes!
                   </p>
                   <p
-                    className="text-lg sm:text-2xl font-bold text-green-600"
+                    className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-green-600"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     TOTAL VALUE: $591
                   </p>
                 </div>
 
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 sm:p-4 rounded-xl mb-3 sm:mb-4 shadow-lg">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-5 lg:p-6 xl:p-8 rounded-xl mb-4 sm:mb-5 lg:mb-6 shadow-lg">
                   <h4
-                    className="text-base sm:text-xl font-bold mb-2 sm:mb-3"
+                    className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold mb-3 sm:mb-4 lg:mb-5"
                     style={wayComeFontStyle}
                   >
                     🔥 CLAIM YOUR PRIZE NOW!
                   </h4>
-                  <div className="bg-white text-gray-900 p-2 sm:p-3 rounded-lg shadow-inner mb-2 sm:mb-3">
+                  <div className="bg-white text-gray-900 p-3 sm:p-4 lg:p-5 xl:p-6 rounded-lg shadow-inner mb-3 sm:mb-4 lg:mb-5">
                     <p
-                      className="text-sm sm:text-lg font-bold text-blue-600"
+                      className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-blue-600 mb-2"
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
                       📞 CALL NOW
                     </p>
                     <p
-                      className="text-lg sm:text-2xl font-bold text-green-600"
+                      className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-green-600"
                       style={{ fontFamily: "Montserrat, sans-serif" }}
                     >
                       (310) 295-6355
@@ -495,7 +495,7 @@ export default function Game() {
                 <div className="flex justify-center">
                   <button
                     onClick={() => setLocation("/")}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors text-sm sm:text-base"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 sm:py-4 lg:py-5 xl:py-6 px-8 sm:px-10 lg:px-12 xl:px-16 rounded-lg transition-colors text-base sm:text-lg lg:text-xl xl:text-2xl"
                     style={{ fontFamily: "Montserrat, sans-serif" }}
                   >
                     Back to Home
@@ -512,29 +512,29 @@ export default function Game() {
 
       {/* Non-Winner Modal */}
       {gameComplete && !winnerCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-8 rounded-lg text-center max-w-md mx-4">
-            <div className="text-6xl mb-4">😢</div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 lg:p-6">
+          <div className="bg-white p-6 sm:p-8 lg:p-10 xl:p-12 rounded-lg text-center max-w-md lg:max-w-lg xl:max-w-xl mx-4 shadow-2xl">
+            <div className="text-6xl lg:text-7xl xl:text-8xl mb-4 lg:mb-6">😢</div>
             <h3
-              className="text-2xl font-bold mb-4 text-gray-600"
+              className="text-2xl lg:text-3xl xl:text-4xl font-bold mb-4 lg:mb-6 text-gray-600"
               style={wayComeFontStyle}
             >
               Try Again!
             </h3>
             <p
-              className="text-lg mb-6"
+              className="text-lg lg:text-xl xl:text-2xl mb-6 lg:mb-8"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
               No winning matches this time, but you can try again!
             </p>
-            <div className="flex space-x-4">
-              <Button onClick={resetGame} className="flex-1">
+            <div className="flex space-x-4 lg:space-x-6">
+              <Button onClick={resetGame} className="flex-1 text-base lg:text-lg xl:text-xl py-3 lg:py-4">
                 Play Again
               </Button>
               <Button
                 onClick={() => setLocation("/")}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-base lg:text-lg xl:text-xl py-3 lg:py-4"
               >
                 Back to Home
               </Button>
