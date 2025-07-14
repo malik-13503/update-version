@@ -126,6 +126,10 @@ The application follows a monorepo structure with separate client and server dir
 - July 14, 2025. Optimized video player with HTML5 video element and metadata preloading
 - July 14, 2025. Added proper video progress tracking and completion detection for local video
 - July 14, 2025. Removed video completion message overlay to avoid interrupting video viewing experience
+- July 14, 2025. Enhanced scratch card mechanics with realistic metallic silver overlay and texture
+- July 14, 2025. Improved scratching with speed-based brush sizing and smoother quadratic curves
+- July 14, 2025. Added touch event optimization and better cursor feedback for scratch interaction
+- July 14, 2025. Reduced scratch completion threshold to 40% for more responsive gameplay
 
 ## User Preferences
 

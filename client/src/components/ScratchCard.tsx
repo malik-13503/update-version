@@ -13,7 +13,7 @@ interface ScratchCardProps {
 export default function ScratchCard({
   width,
   height,
-  scratchPercent = 50,
+  scratchPercent = 40,
   onScratchComplete,
   onInitialTouch,
   children,
@@ -23,6 +23,8 @@ export default function ScratchCard({
   const [isDrawing, setIsDrawing] = useState(false);
   const [isCompleted, setIsCompleted] = useState(isScratched);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
+  const [scratchPoints, setScratchPoints] = useState<Array<{ x: number; y: number; size: number }>>([]);
 
   useEffect(() => {
     if (isScratched) {
@@ -40,13 +42,30 @@ export default function ScratchCard({
     canvas.width = width;
     canvas.height = height;
 
-    // Draw scratch overlay
-    ctx.fillStyle = "#4a5568";
+    // Draw realistic scratch overlay with metallic gradient
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#c0c0c0");
+    gradient.addColorStop(0.2, "#e8e8e8");
+    gradient.addColorStop(0.4, "#a0a0a0");
+    gradient.addColorStop(0.6, "#d0d0d0");
+    gradient.addColorStop(0.8, "#b0b0b0");
+    gradient.addColorStop(1, "#989898");
+    
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
+
+    // Add subtle texture pattern
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    for (let i = 0; i < width; i += 4) {
+      for (let j = 0; j < height; j += 4) {
+        if (Math.random() > 0.7) {
+          ctx.fillRect(i, j, 1, 1);
+        }
+      }
+    }
 
     // Set up for scratching
     ctx.globalCompositeOperation = "destination-out";
-    ctx.lineWidth = 20;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
   }, [width, height, isScratched]);
@@ -76,10 +95,18 @@ export default function ScratchCard({
     
     setIsDrawing(true);
     const pos = getEventPos(e);
+    setLastPoint(pos);
+    
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
+      // Start with a larger brush size for initial touch
+      ctx.lineWidth = 25;
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
+      
+      // Create a circular scratch at the starting point
+      ctx.arc(pos.x, pos.y, 12, 0, 2 * Math.PI);
+      ctx.fill();
     }
   };
 
@@ -89,8 +116,38 @@ export default function ScratchCard({
     const pos = getEventPos(e);
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) {
-      ctx.lineTo(pos.x, pos.y);
+      // Calculate distance from last point for speed-based brush size
+      const distance = Math.sqrt(
+        Math.pow(pos.x - lastPoint.x, 2) + Math.pow(pos.y - lastPoint.y, 2)
+      );
+      
+      // Adjust brush size based on movement speed (slower = larger brush)
+      const baseSize = 20;
+      const speedFactor = Math.min(distance / 10, 3);
+      const brushSize = Math.max(baseSize - speedFactor * 5, 12);
+      
+      ctx.lineWidth = brushSize;
+      
+      // Use quadratic curves for smoother lines
+      const midX = (lastPoint.x + pos.x) / 2;
+      const midY = (lastPoint.y + pos.y) / 2;
+      
+      ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, midX, midY);
       ctx.stroke();
+      
+      // Add small circles along the path for better coverage
+      const steps = Math.ceil(distance / 8);
+      for (let i = 0; i < steps; i++) {
+        const ratio = i / steps;
+        const x = lastPoint.x + (pos.x - lastPoint.x) * ratio;
+        const y = lastPoint.y + (pos.y - lastPoint.y) * ratio;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, brushSize / 2, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      
+      setLastPoint(pos);
     }
   };
 
@@ -128,15 +185,29 @@ export default function ScratchCard({
       <div className="absolute inset-0">{children}</div>
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 cursor-pointer touch-none"
+        className="absolute inset-0 cursor-crosshair touch-none select-none"
         onMouseDown={startScratch}
         onMouseMove={scratch}
         onMouseUp={endScratch}
         onMouseLeave={endScratch}
-        onTouchStart={startScratch}
-        onTouchMove={scratch}
-        onTouchEnd={endScratch}
-        style={{ width: "100%", height: "100%" }}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          startScratch(e);
+        }}
+        onTouchMove={(e) => {
+          e.preventDefault();
+          scratch(e);
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          endScratch();
+        }}
+        style={{ 
+          width: "100%", 
+          height: "100%",
+          WebkitUserSelect: "none",
+          userSelect: "none"
+        }}
       />
     </div>
   );
