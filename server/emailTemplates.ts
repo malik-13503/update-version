@@ -456,7 +456,7 @@ export const sendWinnerEmail = async (data: WinnerEmailData): Promise<boolean> =
   try {
     const resend = getResend();
     const { data: result, error } = await resend.emails.send({
-      from: 'Done For You Pros Winner <winner@amazingworldmedia.com>',
+      from: 'Done For You Pros Winner <onboarding@resend.dev>',
       to: data.userEmail,
       subject: '🎉 YOU WON! Claim Your $591 Prize from Done For You Pros!',
       html: createWinnerEmailTemplate(data),
