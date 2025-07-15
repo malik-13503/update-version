@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertRegistrationSchema, loginSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendWinnerEmail, sendTestEmail, WinnerEmailData } from "./emailTemplates";
+import path from "path";
 
 // Extend Request type to include session
 interface AuthRequest extends Request {
@@ -323,6 +324,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Setting update error:", error);
       res.status(500).json({ message: "Failed to update setting" });
     }
+  });
+
+  // Serve logo image
+  app.get("/logo.png", (req, res) => {
+    const logoPath = path.resolve("attached_assets/logo_1752555507955.png");
+    res.sendFile(logoPath, (err) => {
+      if (err) {
+        console.error("Error serving logo:", err);
+        res.status(404).send("Logo not found");
+      }
+    });
   });
 
   const httpServer = createServer(app);

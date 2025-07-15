@@ -67,17 +67,17 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         
         .logo-container {
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 15px;
+            border-radius: 20px;
             display: inline-block;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             position: relative;
-            max-width: 350px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
             z-index: 1;
-            border: 3px solid rgba(255, 255, 255, 0.8);
+            border: 4px solid rgba(255, 215, 0, 0.3);
         }
         
         .logo {
@@ -395,7 +395,17 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         <!-- Header with Logo and Branding -->
         <div class="header">
             <div class="logo-container">
-                <img src="https://rest-express-v9iw.onrender.com/logo.png" alt="Done For You Pros" class="logo" style="max-width: 200px; height: auto;">
+                <div style="background: linear-gradient(135deg, #F76D46 0%, #2C5CDC 100%); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div style="color: white; font-size: 42px; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin-bottom: 12px; font-family: 'Montserrat', Arial, sans-serif;">
+                        D<span style="color: #FFD700; font-size: 48px;">🔥</span>NE
+                    </div>
+                    <div style="color: white; font-size: 28px; font-weight: 800; margin-bottom: 8px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 1px;">
+                        FOR YOU PROS
+                    </div>
+                    <div style="color: #FFD700; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Montserrat', Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                        Replace Water Lines & Gas Valves On All Home Appliances
+                    </div>
+                </div>
             </div>
             <h1 class="header-title">🎉 CONGRATULATIONS! 🎉</h1>
             <p class="header-subtitle">You're a Winner in Our Scratch & Win Game!</p>
