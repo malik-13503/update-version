@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertRegistrationSchema, loginSchema, updateUserSchema } from "@shared/schema";
 import { z } from "zod";
+import { sendWinnerEmail, sendTestEmail, WinnerEmailData } from "./emailTemplates";
 
 // Extend Request type to include session
 interface AuthRequest extends Request {
@@ -185,6 +186,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: "Failed to update credentials" 
       });
+    }
+  });
+
+  // Email routes
+  app.post("/api/email/winner", async (req, res) => {
+    try {
+      const winnerEmailSchema = z.object({
+        userEmail: z.string().email(),
+        userName: z.string().min(1),
+        prizeName: z.string().min(1),
+        prizeValue: z.string().min(1),
+        phoneNumber: z.string().min(1)
+      });
+
+      const validatedData = winnerEmailSchema.parse(req.body);
+      
+      const success = await sendWinnerEmail(validatedData);
+      
+      if (success) {
+        res.json({ message: "Winner email sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send winner email" });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid data provided", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Email sending error:", error);
+      res.status(500).json({ message: "Failed to send email" });
+    }
+  });
+
+  // Test email route (for testing purposes)
+  app.post("/api/email/test", async (req, res) => {
+    try {
+      const testEmailSchema = z.object({
+        email: z.string().email()
+      });
+
+      const { email } = testEmailSchema.parse(req.body);
+      
+      const success = await sendTestEmail(email);
+      
+      if (success) {
+        res.json({ message: "Test email sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send test email" });
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid email format", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Test email error:", error);
+      res.status(500).json({ message: "Failed to send test email" });
     }
   });
 

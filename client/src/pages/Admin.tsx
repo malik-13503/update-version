@@ -32,6 +32,7 @@ export default function Admin() {
     username: "",
     password: "",
   });
+  const [testEmail, setTestEmail] = useState("");
 
   // Check authentication
   const {
@@ -170,6 +171,45 @@ export default function Admin() {
     
     if (Object.keys(updateData).length > 0) {
       updateCredentialsMutation.mutate(updateData);
+    }
+  };
+
+  // Test email mutation
+  const testEmailMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await fetch("/api/email/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to send test email");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Test email sent successfully! Check your inbox.",
+      });
+      setTestEmail("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleTestEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (testEmail) {
+      testEmailMutation.mutate(testEmail);
     }
   };
 
@@ -948,7 +988,7 @@ export default function Admin() {
 
           {/* Tools Tab */}
           <TabsContent value="tools" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="shadow-lg border-0 bg-gradient-to-br from-green-50 to-green-100">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#059669" }}>
@@ -1035,6 +1075,37 @@ export default function Admin() {
                     <LogOut className="w-4 h-4 mr-2" />
                     {logoutMutation.isPending ? "Logging out..." : "Logout"}
                   </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-yellow-50 to-yellow-100">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#D97706" }}>
+                    <Mail className="w-5 h-5" />
+                    <span>Email Testing</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <form onSubmit={handleTestEmail} className="space-y-3">
+                    <Input
+                      type="email"
+                      placeholder="Enter email address"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      className="focus:border-yellow-500 focus:ring-yellow-500"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                      required
+                    />
+                    <Button
+                      type="submit"
+                      disabled={!testEmail || testEmailMutation.isPending}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      <Mail className="w-4 h-4 mr-2" />
+                      {testEmailMutation.isPending ? "Sending..." : "Send Test Email"}
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>

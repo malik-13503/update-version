@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import ScratchCard from "@/components/ScratchCard";
 import logoPath from "@assets/logo_1751279296203.png";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ScratchCardData {
   id: number;
@@ -104,6 +105,10 @@ export default function Game() {
   const [gameComplete, setGameComplete] = useState(false);
   const [winnerCard, setWinnerCard] = useState<ScratchCardData | null>(null);
   const [firstCardComplete, setFirstCardComplete] = useState(false);
+  const [showEmailPrompt, setShowEmailPrompt] = useState(false);
+  const [winnerEmail, setWinnerEmail] = useState("");
+  const [winnerName, setWinnerName] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
 
   // Confetti component with brand colors that loops continuously
   const Confetti = () => {
@@ -210,7 +215,7 @@ export default function Game() {
         if (dishwasherCount >= 3) {
           setWinnerCard(updatedCard);
           setShowConfetti(true);
-          setTimeout(() => setGameComplete(true), 1000);
+          setShowEmailPrompt(true);
         } else {
           // Second card complete but not a winner
           setTimeout(() => setGameComplete(true), 1000);
@@ -231,6 +236,39 @@ export default function Game() {
     return card.scratches.every((scratch) => scratch);
   };
 
+  const sendWinnerEmail = async () => {
+    if (!winnerEmail || !winnerName) return;
+    
+    setEmailSending(true);
+    
+    try {
+      await apiRequest("/api/email/winner", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: winnerEmail,
+          userName: winnerName,
+          prizeName: "Dishwasher New Water Valve Installation",
+          prizeValue: "$591",
+          phoneNumber: "(310) 295-6355"
+        }),
+      });
+      
+      // Show winner popup after email is sent
+      setShowEmailPrompt(false);
+      setTimeout(() => setGameComplete(true), 500);
+    } catch (error) {
+      console.error("Failed to send winner email:", error);
+      // Still show winner popup even if email fails
+      setShowEmailPrompt(false);
+      setTimeout(() => setGameComplete(true), 500);
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
   const resetGame = () => {
     setCards((prev) =>
       prev.map((card) => ({
@@ -244,6 +282,9 @@ export default function Game() {
     setShowConfetti(false);
     setShowWarningPopup(false);
     setHideCard2Prizes(false);
+    setShowEmailPrompt(false);
+    setWinnerEmail("");
+    setWinnerName("");
   };
 
   return (
@@ -432,6 +473,73 @@ export default function Game() {
               >
                 Complete Card 1 First!
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Collection Prompt */}
+      {showEmailPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-3 sm:p-4 md:p-6">
+          <div className="bg-gradient-to-br from-blue-500 to-orange-500 p-3 sm:p-4 md:p-5 rounded-3xl max-w-sm sm:max-w-md w-full mx-3 sm:mx-4 shadow-2xl">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 md:p-7 text-center">
+              <div className="text-4xl sm:text-5xl mb-4 animate-bounce">🎉</div>
+              
+              <h3
+                className="text-2xl sm:text-3xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-red-600"
+                style={wayComeFontStyle}
+              >
+                YOU WON!
+              </h3>
+              
+              <p
+                className="text-sm sm:text-base mb-4 text-gray-700"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                Enter your details to receive your prize confirmation email and claim your <strong>$591 Dishwasher Installation</strong>!
+              </p>
+              
+              <div className="space-y-4 mb-6">
+                <input
+                  type="text"
+                  placeholder="Your Full Name"
+                  value={winnerName}
+                  onChange={(e) => setWinnerName(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center font-semibold"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                />
+                
+                <input
+                  type="email"
+                  placeholder="Your Email Address"
+                  value={winnerEmail}
+                  onChange={(e) => setWinnerEmail(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center font-semibold"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={sendWinnerEmail}
+                  disabled={!winnerEmail || !winnerName || emailSending}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  {emailSending ? "Sending..." : "🎁 Claim Prize"}
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setShowEmailPrompt(false);
+                    setTimeout(() => setGameComplete(true), 500);
+                  }}
+                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  Skip
+                </button>
+              </div>
             </div>
           </div>
         </div>
