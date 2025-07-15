@@ -37,6 +37,9 @@ export default function Admin() {
   const [testEmail, setTestEmail] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   // Check authentication
   const {
@@ -162,8 +165,15 @@ export default function Admin() {
   });
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this registration?")) {
-      deleteRegistration.mutate(id);
+    setDeleteItemId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteItemId) {
+      deleteRegistration.mutate(deleteItemId);
+      setDeleteDialogOpen(false);
+      setDeleteItemId(null);
     }
   };
 
@@ -230,9 +240,12 @@ export default function Admin() {
       return;
     }
     
-    if (confirm(`Are you sure you want to delete ${selectedUsers.length} selected users? This action cannot be undone.`)) {
-      bulkDeleteMutation.mutate(selectedUsers);
-    }
+    setBulkDeleteDialogOpen(true);
+  };
+
+  const confirmBulkDelete = () => {
+    bulkDeleteMutation.mutate(selectedUsers);
+    setBulkDeleteDialogOpen(false);
   };
 
   const handleUpdateCredentials = (e: React.FormEvent) => {
@@ -1442,6 +1455,96 @@ export default function Admin() {
 
         </Tabs>
       </div>
+
+      {/* Single Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-3" style={{ fontFamily: "Montserrat, sans-serif" }}>
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Delete Registration</h3>
+                <p className="text-sm text-gray-500 mt-1">This action cannot be undone</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+              Are you sure you want to delete this registration? This will permanently remove the user's information from the system.
+            </p>
+          </div>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              className="px-6"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-3" style={{ fontFamily: "Montserrat, sans-serif" }}>
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Bulk Delete Users</h3>
+                <p className="text-sm text-gray-500 mt-1">This action cannot be undone</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700 mb-3" style={{ fontFamily: "Montserrat, sans-serif" }}>
+              Are you sure you want to delete <span className="font-semibold text-red-600">{selectedUsers.length}</span> selected users? This will permanently remove their information from the system.
+            </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="text-sm text-red-700 font-medium">This action is irreversible</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setBulkDeleteDialogOpen(false)}
+              className="px-6"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmBulkDelete}
+              className="px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete {selectedUsers.length} Users
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
