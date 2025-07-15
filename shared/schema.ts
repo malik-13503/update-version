@@ -19,6 +19,14 @@ export const registrations = pgTable("registrations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const settings = pgTable("settings", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+  description: text("description"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -42,9 +50,23 @@ export const insertRegistrationSchema = createInsertSchema(registrations).pick({
   videoWatched: true,
 });
 
+export const insertSettingSchema = createInsertSchema(settings).pick({
+  key: true,
+  value: true,
+  description: true,
+});
+
+export const updateSettingSchema = z.object({
+  value: z.string(),
+  description: z.string().optional(),
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertRegistration = z.infer<typeof insertRegistrationSchema>;
 export type Registration = typeof registrations.$inferSelect;
 export type LoginData = z.infer<typeof loginSchema>;
 export type UpdateUserData = z.infer<typeof updateUserSchema>;
+export type Setting = typeof settings.$inferSelect;
+export type InsertSetting = z.infer<typeof insertSettingSchema>;
+export type UpdateSetting = z.infer<typeof updateSettingSchema>;

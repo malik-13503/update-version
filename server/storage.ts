@@ -1,4 +1,4 @@
-import { users, registrations, type User, type InsertUser, type Registration, type InsertRegistration, type UpdateUserData } from "@shared/schema";
+import { users, registrations, settings, type User, type InsertUser, type Registration, type InsertRegistration, type UpdateUserData, type Setting, type InsertSetting, type UpdateSetting } from "@shared/schema";
 import { db } from "./db";
 import { eq, count, desc } from "drizzle-orm";
 
@@ -13,6 +13,10 @@ export interface IStorage {
   getAllRegistrations(): Promise<Registration[]>;
   deleteRegistration(id: number): Promise<void>;
   createDefaultAdmin(): Promise<void>;
+  getSetting(key: string): Promise<Setting | undefined>;
+  setSetting(key: string, value: string, description?: string): Promise<Setting>;
+  getAllSettings(): Promise<Setting[]>;
+  initializeDefaultSettings(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -78,6 +82,61 @@ export class DatabaseStorage implements IStorage {
         password: "password@security",
         role: "admin"
       });
+    }
+  }
+
+  async getSetting(key: string): Promise<Setting | undefined> {
+    const [setting] = await db.select().from(settings).where(eq(settings.key, key));
+    return setting || undefined;
+  }
+
+  async setSetting(key: string, value: string, description?: string): Promise<Setting> {
+    const existingSetting = await this.getSetting(key);
+    
+    if (existingSetting) {
+      const [setting] = await db
+        .update(settings)
+        .set({ 
+          value,
+          description: description || existingSetting.description,
+          updatedAt: new Date()
+        })
+        .where(eq(settings.key, key))
+        .returning();
+      return setting;
+    } else {
+      const [setting] = await db
+        .insert(settings)
+        .values({ key, value, description })
+        .returning();
+      return setting;
+    }
+  }
+
+  async getAllSettings(): Promise<Setting[]> {
+    const results = await db.select().from(settings);
+    return results;
+  }
+
+  async initializeDefaultSettings(): Promise<void> {
+    const defaultSettings = [
+      {
+        key: 'duplicate_email_check',
+        value: 'true',
+        description: 'Enable duplicate email checking to prevent multiple registrations with same email'
+      },
+      {
+        key: 'duplicate_phone_check',
+        value: 'true',
+        description: 'Enable duplicate phone checking to prevent multiple registrations with same phone'
+      }
+    ];
+
+    for (const setting of defaultSettings) {
+      const existing = await this.getSetting(setting.key);
+      if (!existing) {
+        await this.setSetting(setting.key, setting.value, setting.description);
+      }
     }
   }
 }

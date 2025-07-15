@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
 import { 
   Trash2, Users, Eye, Calendar, LogOut, Settings, Download, FileText, FileSpreadsheet,
   TrendingUp, TrendingDown, Mail, Phone, Video, BarChart3, PieChart, Activity,
@@ -212,6 +213,51 @@ export default function Admin() {
       testEmailMutation.mutate(testEmail);
     }
   };
+
+  // Settings query
+  const { data: settings } = useQuery({
+    queryKey: ["/api/admin/settings"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/settings");
+      if (!response.ok) {
+        throw new Error("Failed to fetch settings");
+      }
+      return response.json();
+    },
+    enabled: !!authData,
+  });
+
+  // Settings mutation
+  const updateSettingMutation = useMutation({
+    mutationFn: async ({ key, value }: { key: string; value: string }) => {
+      const response = await fetch(`/api/admin/settings/${key}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ value }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update setting");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({
+        title: "Success",
+        description: "Setting updated successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const exportToCSV = () => {
     if (!registrations || registrations.length === 0) {
@@ -1125,6 +1171,66 @@ export default function Admin() {
                       {testEmailMutation.isPending ? "Sending..." : "Send Test Email"}
                     </Button>
                   </form>
+                </CardContent>
+              </Card>
+
+              {/* Game Settings */}
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-purple-100">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2" style={{ fontFamily: "Montserrat, sans-serif", color: "#7C3AED" }}>
+                    <Settings className="w-5 h-5" />
+                    <span>Game Settings</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Duplicate Email Check Toggle */}
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
+                    <div className="flex-1">
+                      <Label className="text-sm font-semibold text-purple-800 mb-1 block" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Duplicate Email Check
+                      </Label>
+                      <p className="text-xs text-purple-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Prevent users from playing multiple times with the same email
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true'}
+                      onCheckedChange={(checked) => {
+                        updateSettingMutation.mutate({
+                          key: 'duplicate_email_check',
+                          value: checked ? 'true' : 'false'
+                        });
+                      }}
+                      disabled={updateSettingMutation.isPending}
+                    />
+                  </div>
+
+                  {/* Status Indicator */}
+                  <div className="flex items-center justify-center space-x-2 p-2 bg-white rounded-lg border border-purple-200">
+                    <div className={`w-3 h-3 rounded-full ${
+                      settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
+                        ? 'bg-green-500 animate-pulse' 
+                        : 'bg-red-500'
+                    }`}></div>
+                    <span className="text-sm font-medium text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      {settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
+                        ? 'Email Check Enabled' 
+                        : 'Email Check Disabled'}
+                    </span>
+                  </div>
+
+                  {/* Settings Info */}
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-4 h-4 text-purple-600 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          <strong>Enabled:</strong> Users see warning popup for duplicate emails<br/>
+                          <strong>Disabled:</strong> Users can play multiple times with same email
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>

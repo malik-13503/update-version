@@ -88,12 +88,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertRegistrationSchema.parse(req.body);
       
-      // Check if email already exists
-      const existingRegistration = await storage.getRegistrationByEmail(validatedData.email);
-      if (existingRegistration) {
-        return res.status(400).json({ 
-          message: "Email already registered. Please use a different email address." 
-        });
+      // Check duplicate email setting
+      const emailCheckSetting = await storage.getSetting('duplicate_email_check');
+      const emailCheckEnabled = emailCheckSetting?.value === 'true';
+      
+      if (emailCheckEnabled) {
+        const existingRegistration = await storage.getRegistrationByEmail(validatedData.email);
+        if (existingRegistration) {
+          return res.status(400).json({ 
+            message: "Email already registered. Please use a different email address." 
+          });
+        }
       }
       
       const registration = await storage.createRegistration(validatedData);
@@ -248,6 +253,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.error("Test email error:", error);
       res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // Settings routes (admin protected)
+  app.get("/api/admin/settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.getAllSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Settings fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.get("/api/admin/settings/:key", requireAuth, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const setting = await storage.getSetting(key);
+      
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      
+      res.json(setting);
+    } catch (error) {
+      console.error("Setting fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  app.put("/api/admin/settings/:key", requireAuth, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const updateSettingSchema = z.object({
+        value: z.string(),
+        description: z.string().optional(),
+      });
+      
+      const { value, description } = updateSettingSchema.parse(req.body);
+      
+      const setting = await storage.setSetting(key, value, description);
+      res.json({ message: "Setting updated successfully", setting });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid data provided", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Setting update error:", error);
+      res.status(500).json({ message: "Failed to update setting" });
     }
   });
 
