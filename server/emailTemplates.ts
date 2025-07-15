@@ -1,8 +1,16 @@
 import { Resend } from 'resend';
 
+let resend: Resend | null = null;
+
 const getResend = () => {
-  const apiKey = process.env.RESEND_API_KEY || "re_SaKHEoaA_DTs5dkH1Wte3AyRqsABxAQx5";
-  return new Resend(apiKey);
+  if (!resend) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    resend = new Resend(apiKey);
+  }
+  return resend;
 };
 
 export interface WinnerEmailData {
@@ -20,10 +28,8 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 Congratulations! You're a Winner!</title>
+    <title>🎉 You Won! Claim Your Prize Now!</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -31,336 +37,195 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         body {
-            font-family: 'Montserrat', Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f5f5f5;
+            background: #f0f2f5;
+            padding: 20px;
         }
         
         .email-container {
-            max-width: 650px;
-            margin: 20px auto;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            border: 2px solid #FFD700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .header {
-            background: linear-gradient(135deg, #2C5CDC 0%, #4F73E6 30%, #F76D46 70%, #FF8A65 100%);
-            padding: 30px 20px;
+            background: linear-gradient(135deg, #2C5CDC 0%, #F76D46 100%);
+            padding: 40px 20px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            color: white;
         }
         
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2.5" fill="rgba(255,255,255,0.1)"/></svg>');
-        }
-        
-        .logo-container {
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 20px;
+        .logo-text {
+            background: white;
+            color: #2C5CDC;
+            padding: 15px 30px;
+            border-radius: 50px;
             display: inline-block;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            position: relative;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            z-index: 1;
-            border: 4px solid rgba(255, 215, 0, 0.3);
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
-        .logo {
-            height: 80px;
-            width: auto;
-            max-width: 200px;
-            object-fit: contain;
+        .logo-flame {
+            color: #F76D46;
+            font-size: 28px;
         }
         
         .header-title {
-            color: #ffffff;
             font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 1;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); }
-            to { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.8); }
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .header-subtitle {
-            color: #ffffff;
-            font-size: 16px;
+            font-size: 18px;
+            color: #FFD700;
             font-weight: 600;
-            position: relative;
-            z-index: 1;
         }
         
         .content {
             padding: 40px 30px;
+            text-align: center;
         }
         
-        .trophy-section {
-            text-align: center;
-            margin-bottom: 30px;
+        .winner-section {
+            margin-bottom: 40px;
         }
         
         .trophy {
             font-size: 60px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
+            margin-bottom: 20px;
+            display: block;
         }
         
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
-        }
-        
-        .celebration-text {
-            font-size: 24px;
-            font-weight: 700;
+        .winner-title {
+            font-size: 32px;
+            font-weight: 900;
             color: #2C5CDC;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .winner-name {
             font-size: 20px;
-            font-weight: 600;
-            color: #333;
+            color: #666;
             margin-bottom: 30px;
         }
         
-        .prize-card {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #F76D46 70%, #FF8A65 100%);
-            border: 4px solid #2C5CDC;
+        .prize-box {
+            background: linear-gradient(135deg, #FFD700 0%, #F76D46 100%);
             border-radius: 20px;
-            padding: 35px;
+            padding: 30px;
             margin-bottom: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            animation: pulse 2s ease-in-out infinite;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        
-        .prize-card::before {
-            content: '🎁✨🏆';
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            font-size: 30px;
-            opacity: 0.3;
-            animation: bounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        
-        .prize-title {
+        .prize-label {
             font-size: 18px;
             font-weight: 700;
-            color: #2C5CDC;
             margin-bottom: 10px;
+            color: #2C5CDC;
         }
         
-        .prize-description {
-            font-size: 16px;
-            color: #555;
+        .prize-name {
+            font-size: 20px;
+            font-weight: 600;
             margin-bottom: 15px;
-            line-height: 1.5;
         }
         
         .prize-value {
-            font-size: 36px;
-            font-weight: 800;
-            color: #ffffff;
-            background: linear-gradient(135deg, #2C5CDC 0%, #8B5CF6 100%);
-            padding: 20px 30px;
-            border-radius: 50px;
-            display: inline-block;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            animation: prize-glow 3s ease-in-out infinite;
-            margin-top: 10px;
+            font-size: 48px;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        @keyframes prize-glow {
-            0% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
-            50% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.6); }
-            100% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
-        }
-        
-        .claim-section {
-            background: linear-gradient(135deg, #2C5CDC 0%, #4F73E6 50%, #F76D46 100%);
-            color: #ffffff;
+        .call-section {
+            background: #2C5CDC;
+            color: white;
             padding: 30px;
             border-radius: 15px;
-            text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
         
-        .claim-title {
-            font-size: 22px;
-            font-weight: 700;
+        .call-title {
+            font-size: 24px;
+            font-weight: 800;
             margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
         
-        .claim-instruction {
+        .call-text {
             font-size: 16px;
             margin-bottom: 20px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         
-        .phone-container {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #F76D46 100%);
+        .phone-button {
+            background: linear-gradient(135deg, #FFD700 0%, #F76D46 100%);
             color: #2C5CDC;
-            padding: 25px 35px;
-            border-radius: 15px;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: 900;
             display: inline-block;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border: 3px solid #ffffff;
-            animation: phone-pulse 2s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border: 3px solid white;
+            transition: transform 0.3s ease;
         }
         
-        @keyframes phone-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .phone-button:hover {
+            transform: translateY(-2px);
         }
         
-        .phone-number {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .urgency-text {
-            font-size: 14px;
-            color: #ffb22a;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        
-        .important-notes {
-            background-color: #fff8dc;
-            border-left: 4px solid #ffb22a;
+        .urgent-note {
+            background: #fff3cd;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
             padding: 20px;
             margin-bottom: 30px;
-            border-radius: 0 8px 8px 0;
+            color: #856404;
         }
         
-        .important-notes h3 {
-            color: #F76D46;
+        .urgent-title {
             font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #F76D46;
+        }
+        
+        .urgent-list {
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .urgent-list li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .footer-logo {
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 10px;
         }
         
-        .important-notes ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .important-notes li {
-            margin-bottom: 8px;
-            padding-left: 20px;
-            position: relative;
+        .footer-text {
             font-size: 14px;
-            color: #555;
-        }
-        
-        .important-notes li::before {
-            content: '✓';
-            position: absolute;
-            left: 0;
-            color: #2C5CDC;
-            font-weight: bold;
-        }
-        
-        .footer {
-            background-color: #ffb22a;
-            color: #333;
-            text-align: center;
-            padding: 25px;
-        }
-        
-        .footer-content {
-            background-color: #000;
-            color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .footer-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .footer-subtitle {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .company-info {
-            font-size: 12px;
-            color: #333;
-            font-weight: 600;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #F76D46;
-            animation: confetti-fall 3s linear infinite;
-        }
-        
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100px) rotate(360deg);
-                opacity: 0;
-            }
+            color: #ccc;
         }
         
         @media (max-width: 600px) {
@@ -373,79 +238,69 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
             }
             
             .header-title {
-                font-size: 24px;
+                font-size: 28px;
             }
             
-            .celebration-text {
-                font-size: 20px;
-            }
-            
-            .phone-number {
+            .winner-title {
                 font-size: 24px;
             }
             
             .prize-value {
-                font-size: 20px;
+                font-size: 36px;
+            }
+            
+            .phone-button {
+                font-size: 24px;
+                padding: 15px 30px;
             }
         }
     </style>
 </head>
 <body>
     <div class="email-container">
-        <!-- Header with Logo and Branding -->
+        <!-- Simple Header -->
         <div class="header">
-            <div class="logo-container">
-                <div style="background: linear-gradient(135deg, #F76D46 0%, #2C5CDC 100%); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                    <div style="color: white; font-size: 42px; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin-bottom: 12px; font-family: 'Montserrat', Arial, sans-serif;">
-                        D<span style="color: #FFD700; font-size: 48px;">🔥</span>NE
-                    </div>
-                    <div style="color: white; font-size: 28px; font-weight: 800; margin-bottom: 8px; font-family: 'Montserrat', Arial, sans-serif; letter-spacing: 1px;">
-                        FOR YOU PROS
-                    </div>
-                    <div style="color: #FFD700; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Montserrat', Arial, sans-serif; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
-                        Replace Water Lines & Gas Valves On All Home Appliances
-                    </div>
-                </div>
+            <div class="logo-text">
+                D<span class="logo-flame">🔥</span>NE FOR YOU PROS
             </div>
             <h1 class="header-title">🎉 CONGRATULATIONS! 🎉</h1>
-            <p class="header-subtitle">You're a Winner in Our Scratch & Win Game!</p>
+            <p class="header-subtitle">You Won Our Scratch & Win Game!</p>
         </div>
         
         <!-- Main Content -->
         <div class="content">
-            <!-- Trophy Section -->
-            <div class="trophy-section">
+            <!-- Winner Section -->
+            <div class="winner-section">
                 <div class="trophy">🏆</div>
-                <h2 class="celebration-text">WINNER WINNER!</h2>
+                <h2 class="winner-title">WINNER!</h2>
                 <p class="winner-name">Dear ${data.userName},</p>
             </div>
             
-            <!-- Prize Information -->
-            <div class="prize-card">
-                <h3 class="prize-title">🎁 YOUR WINNING PRIZE</h3>
-                <p class="prize-description">${data.prizeName}</p>
+            <!-- Prize Box -->
+            <div class="prize-box">
+                <div class="prize-label">🎁 YOUR PRIZE</div>
+                <div class="prize-name">${data.prizeName}</div>
                 <div class="prize-value">${data.prizeValue}</div>
             </div>
             
-            <!-- Claim Instructions -->
-            <div class="claim-section">
-                <h3 class="claim-title">🔥 CLAIM YOUR PRIZE NOW!</h3>
-                <p class="claim-instruction">
+            <!-- Call Section -->
+            <div class="call-section">
+                <h3 class="call-title">🔥 CLAIM YOUR PRIZE NOW!</h3>
+                <p class="call-text">
                     Call us immediately to claim your prize and schedule your installation!
                 </p>
-                <div class="phone-container">
-                    <p class="phone-number">📞 ${data.phoneNumber}</p>
-                </div>
-                <p class="urgency-text">⏰ Call now to secure your prize!</p>
+                <a href="tel:${data.phoneNumber}" class="phone-button">
+                    📞 ${data.phoneNumber}
+                </a>
             </div>
             
             <!-- Important Notes -->
-            <div class="important-notes">
-                <h3>📋 Important Information:</h3>
-                <ul>
+            <div class="urgent-note">
+                <h3 class="urgent-title">📋 Important Information:</h3>
+                <ul class="urgent-list">
                     <li>Have your winning confirmation email ready when you call</li>
                     <li>Prize must be claimed within 30 days of winning</li>
-                    <li>Installation will be scheduled at your convenience</li>
+                    <li>Installation scheduled at your convenience</li>
                     <li>All parts and labor included in your prize value</li>
                     <li>Professional installation by certified technicians</li>
                 </ul>
@@ -454,11 +309,12 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         
         <!-- Footer -->
         <div class="footer">
-            <div class="footer-content">
-                <p class="footer-title">Our 20 Connection New Parts Installations Program</p>
-                <p class="footer-subtitle">is already Protecting 300,000+ Home Owners nationwide</p>
-            </div>
-            <p class="company-info">© 2025 Done For You Pros. All rights reserved.</p>
+            <div class="footer-logo">Done For You Pros</div>
+            <p class="footer-text">
+                Our 20 Connection New Parts Installations Program<br>
+                is already Protecting 300,000+ Home Owners nationwide
+            </p>
+            <p class="footer-text">© 2025 Done For You Pros. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -486,17 +342,13 @@ export const sendWinnerEmail = async (data: WinnerEmailData): Promise<boolean> =
       if (error.message && error.message.includes('domain is not verified')) {
         console.error('Domain verification required. Use onboarding@resend.dev for testing.');
       }
-      // Check if it's a test email restriction
-      if (error.message && error.message.includes('testing emails to your own email')) {
-        console.error('Test email restriction: You can only send test emails to your own verified email address.');
-      }
       return false;
     }
 
     console.log('Winner email sent successfully:', result);
     return true;
   } catch (error) {
-    console.error('Failed to send winner email:', error);
+    console.error('Unexpected error sending winner email:', error);
     return false;
   }
 };
@@ -505,7 +357,7 @@ export const sendTestEmail = async (testEmail: string): Promise<boolean> => {
   const testData: WinnerEmailData = {
     userEmail: testEmail,
     userName: 'Test Winner',
-    prizeName: 'Dishwasher New Water Valve Installation',
+    prizeName: 'Replace Water Lines & Gas Valves On All Home Appliances',
     prizeValue: '$591',
     phoneNumber: '(310) 295-6355'
   };
