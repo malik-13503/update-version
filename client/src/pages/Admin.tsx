@@ -807,6 +807,15 @@ export default function Admin() {
                   </span>
                   <div className="flex space-x-2">
                     <Button
+                      onClick={exportToCSV}
+                      variant="outline"
+                      size="sm"
+                      className="bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                    >
+                      <FileSpreadsheet className="w-4 h-4 mr-2" />
+                      Export CSV
+                    </Button>
+                    <Button
                       onClick={exportToJSON}
                       variant="outline"
                       size="sm"

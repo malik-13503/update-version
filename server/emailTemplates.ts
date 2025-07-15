@@ -73,6 +73,9 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             position: relative;
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
             z-index: 1;
         }
         
@@ -389,9 +392,7 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         <!-- Header with Logo and Branding -->
         <div class="header">
             <div class="logo-container">
-                <div style="background: linear-gradient(135deg, #2C5CDC 0%, #F76D46 100%); color: white; padding: 15px 25px; border-radius: 10px; font-weight: 800; font-size: 24px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-                    Done For You Pros
-                </div>
+                <img src="https://i.ibb.co/jMcQQzL/logo-1752555507955.png" alt="Done For You Pros" class="logo" style="max-width: 200px; height: auto;">
             </div>
             <h1 class="header-title">🎉 CONGRATULATIONS! 🎉</h1>
             <p class="header-subtitle">You're a Winner in Our Scratch & Win Game!</p>

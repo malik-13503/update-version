@@ -69,7 +69,15 @@ export default function RegistrationForm({
       });
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
+      // Save user registration data to localStorage for game page
+      localStorage.setItem('userRegistrationData', JSON.stringify({
+        name: variables.name,
+        email: variables.email,
+        phone: variables.phone,
+        videoWatched: variables.videoWatched
+      }));
+      
       toast({
         title: "Registration Successful!",
         description: "Redirecting to the game...",

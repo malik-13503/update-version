@@ -42,10 +42,32 @@ export default function Game() {
   }
 
   const [, setLocation] = useLocation();
+
+  // Security: Check for registered user data
+  const [userRegistrationData, setUserRegistrationData] = useState<any>(null);
+  
+  useEffect(() => {
+    // Check if user came from registration
+    const regData = localStorage.getItem('userRegistrationData');
+    if (!regData) {
+      // If no registration data, redirect to home
+      setLocation('/');
+      return;
+    }
+    
+    try {
+      const parsedData = JSON.parse(regData);
+      setUserRegistrationData(parsedData);
+    } catch (error) {
+      // If invalid data, redirect to home
+      setLocation('/');
+    }
+  }, [setLocation]);
   const [gameStarted, setGameStarted] = useState(true); // Start game directly
   const [showConfetti, setShowConfetti] = useState(false);
   const [showWarningPopup, setShowWarningPopup] = useState(false);
   const [hideCard2Prizes, setHideCard2Prizes] = useState(false);
+  const [showLosePopup, setShowLosePopup] = useState(false);
   const [cards, setCards] = useState<ScratchCardData[]>([
     {
       id: 1,
@@ -203,6 +225,11 @@ export default function Game() {
         // Clear any warning states when Card 1 is completed
         setShowWarningPopup(false);
         setHideCard2Prizes(false);
+        
+        // Show lose popup if first card is not a winner
+        if (!updatedCard.isWinner) {
+          setShowLosePopup(true);
+        }
       }
 
       // If it's the second card (winner card) and it's fully scratched
@@ -215,7 +242,13 @@ export default function Game() {
         if (dishwasherCount >= 3) {
           setWinnerCard(updatedCard);
           setShowConfetti(true);
-          setShowEmailPrompt(true);
+          
+          // Use registration data for email if available
+          if (userRegistrationData) {
+            sendWinnerEmailWithRegistrationData(userRegistrationData);
+          } else {
+            setShowEmailPrompt(true);
+          }
         } else {
           // Second card complete but not a winner
           setTimeout(() => setGameComplete(true), 1000);
@@ -263,6 +296,34 @@ export default function Game() {
       console.error("Failed to send winner email:", error);
       // Still show winner popup even if email fails
       setShowEmailPrompt(false);
+      setTimeout(() => setGameComplete(true), 500);
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const sendWinnerEmailWithRegistrationData = async (regData: any) => {
+    setEmailSending(true);
+    
+    try {
+      await apiRequest("/api/email/winner", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: regData.email,
+          userName: regData.name,
+          prizeName: "Dishwasher New Water Valve Installation",
+          prizeValue: "$591",
+          phoneNumber: regData.phone
+        }),
+      });
+      
+      setTimeout(() => setGameComplete(true), 500);
+    } catch (error) {
+      console.error("Error sending winner email:", error);
+      // Still proceed to show completion
       setTimeout(() => setGameComplete(true), 500);
     } finally {
       setEmailSending(false);
@@ -472,6 +533,54 @@ export default function Game() {
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 Complete Card 1 First!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lose Popup for First Card */}
+      {showLosePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-3xl max-w-md w-full mx-4 shadow-2xl animate-bounce">
+            <div className="bg-white rounded-2xl p-6 text-center">
+              <div className="text-5xl mb-4 animate-pulse">😅</div>
+              
+              <h3
+                className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"
+                style={wayComeFontStyle}
+              >
+                OOPS!
+              </h3>
+              
+              <p
+                className="text-lg mb-6 text-gray-700 leading-relaxed"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                You didn't win this round, but <strong>don't give up!</strong>
+              </p>
+              
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg mb-6 border-2 border-yellow-400">
+                <p
+                  className="text-base font-semibold text-orange-800 mb-2"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  🎁 You still have a chance to win big!
+                </p>
+                <p
+                  className="text-sm text-gray-600"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  Try your luck with Card 2 and you could win amazing prizes!
+                </p>
+              </div>
+              
+              <button
+                onClick={() => setShowLosePopup(false)}
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                🎲 Get My Second Card!
               </button>
             </div>
           </div>

@@ -135,6 +135,13 @@ The application follows a monorepo structure with separate client and server dir
 - July 15, 2025. Enhanced admin dashboard with email testing functionality
 - July 15, 2025. Added winner email sending with prize details and contact information
 - July 15, 2025. Configured Resend API with proper error handling and fallback email domain
+- July 15, 2025. Added game page security to prevent direct access without registration
+- July 15, 2025. Implemented lose popup for first card with "Get Second Card" button
+- July 15, 2025. Added automatic email sending for second card wins using registration data
+- July 15, 2025. Enhanced email template with new logo and improved Outlook compatibility
+- July 15, 2025. Added CSV export functionality to admin dashboard Users tab
+- July 15, 2025. Fixed winner email confirmation system with proper API endpoints
+- July 15, 2025. Implemented localStorage storage for user registration data across pages
 
 ## User Preferences
 
