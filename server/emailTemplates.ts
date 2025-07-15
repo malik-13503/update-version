@@ -38,12 +38,13 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 12px;
+            max-width: 650px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 2px solid #FFD700;
         }
         
         .header {
@@ -76,18 +77,25 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .logo {
-            height: 60px;
+            height: 80px;
             width: auto;
+            max-width: 200px;
         }
         
         .header-title {
             color: #ffffff;
-            font-size: 28px;
+            font-size: 36px;
             font-weight: 800;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 1;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); }
+            to { text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.8); }
         }
         
         .header-subtitle {
@@ -140,23 +148,38 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .prize-card {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8f5e8 100%);
-            border: 3px solid #2C5CDC;
-            border-radius: 12px;
-            padding: 25px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6347 100%);
+            border: 4px solid #2C5CDC;
+            border-radius: 20px;
+            padding: 35px;
             margin-bottom: 30px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
         
         .prize-card::before {
-            content: '🎁';
+            content: '🎁✨🏆';
             position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 40px;
-            opacity: 0.1;
+            top: -15px;
+            right: -15px;
+            font-size: 30px;
+            opacity: 0.3;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
         
         .prize-title {
@@ -174,14 +197,23 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .prize-value {
-            font-size: 24px;
+            font-size: 36px;
             font-weight: 800;
-            color: #F76D46;
-            background-color: #ffffff;
-            padding: 10px 20px;
-            border-radius: 25px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #2C5CDC 0%, #8B5CF6 100%);
+            padding: 20px 30px;
+            border-radius: 50px;
             display: inline-block;
-            box-shadow: 0 3px 10px rgba(247, 109, 70, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: prize-glow 3s ease-in-out infinite;
+            margin-top: 10px;
+        }
+        
+        @keyframes prize-glow {
+            0% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
         }
         
         .claim-section {
@@ -207,19 +239,28 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .phone-container {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #2C5CDC;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 25px 35px;
+            border-radius: 15px;
             display: inline-block;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #ffffff;
+            animation: phone-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes phone-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .phone-number {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .urgency-text {
@@ -348,7 +389,9 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         <!-- Header with Logo and Branding -->
         <div class="header">
             <div class="logo-container">
-                <img src="https://your-domain.com/logo.png" alt="Done For You Pros" class="logo">
+                <div style="background: linear-gradient(135deg, #2C5CDC 0%, #F76D46 100%); color: white; padding: 15px 25px; border-radius: 10px; font-weight: 800; font-size: 24px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    Done For You Pros
+                </div>
             </div>
             <h1 class="header-title">🎉 CONGRATULATIONS! 🎉</h1>
             <p class="header-subtitle">You're a Winner in Our Scratch & Win Game!</p>
@@ -413,9 +456,9 @@ export const sendWinnerEmail = async (data: WinnerEmailData): Promise<boolean> =
   try {
     const resend = getResend();
     const { data: result, error } = await resend.emails.send({
-      from: 'Done For You Pros <onboarding@resend.dev>',
+      from: 'Done For You Pros Winner <winner@amazingworldmedia.com>',
       to: data.userEmail,
-      subject: '🎉 Congratulations! You Won a Prize from Done For You Pros!',
+      subject: '🎉 YOU WON! Claim Your $591 Prize from Done For You Pros!',
       html: createWinnerEmailTemplate(data),
     });
 
