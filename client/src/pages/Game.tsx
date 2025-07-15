@@ -716,6 +716,22 @@ export default function Game() {
                       (310) 295-6355
                     </p>
                   </div>
+                  
+                  {/* Email Notification Message */}
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 sm:p-4 rounded-lg shadow-inner">
+                    <p
+                      className="text-sm sm:text-base font-semibold mb-1"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      ✉️ Check Your Email!
+                    </p>
+                    <p
+                      className="text-xs sm:text-sm"
+                      style={{ fontFamily: "Montserrat, sans-serif" }}
+                    >
+                      A confirmation email with prize details has been sent to your registered email address.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex justify-center">
