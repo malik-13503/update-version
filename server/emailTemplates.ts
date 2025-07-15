@@ -48,7 +48,7 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .header {
-            background: linear-gradient(135deg, #2C5CDC 0%, #F76D46 100%);
+            background: linear-gradient(135deg, #2C5CDC 0%, #4F73E6 30%, #F76D46 70%, #FF8A65 100%);
             padding: 30px 20px;
             text-align: center;
             position: relative;
@@ -67,22 +67,24 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         
         .logo-container {
             background-color: #ffffff;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 15px;
             display: inline-block;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             position: relative;
-            max-width: 300px;
+            max-width: 350px;
             width: 100%;
             text-align: center;
             z-index: 1;
+            border: 3px solid rgba(255, 255, 255, 0.8);
         }
         
         .logo {
             height: 80px;
             width: auto;
             max-width: 200px;
+            object-fit: contain;
         }
         
         .header-title {
@@ -151,7 +153,7 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .prize-card {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6347 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #F76D46 70%, #FF8A65 100%);
             border: 4px solid #2C5CDC;
             border-radius: 20px;
             padding: 35px;
@@ -220,12 +222,13 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .claim-section {
-            background: linear-gradient(135deg, #2C5CDC 0%, #1a4bc4 100%);
+            background: linear-gradient(135deg, #2C5CDC 0%, #4F73E6 50%, #F76D46 100%);
             color: #ffffff;
             padding: 30px;
-            border-radius: 12px;
+            border-radius: 15px;
             text-align: center;
             margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
         
         .claim-title {
@@ -242,7 +245,7 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         }
         
         .phone-container {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #F76D46 100%);
             color: #2C5CDC;
             padding: 25px 35px;
             border-radius: 15px;
@@ -392,7 +395,7 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
         <!-- Header with Logo and Branding -->
         <div class="header">
             <div class="logo-container">
-                <img src="https://i.ibb.co/jMcQQzL/logo-1752555507955.png" alt="Done For You Pros" class="logo" style="max-width: 200px; height: auto;">
+                <img src="https://rest-express-v9iw.onrender.com/logo.png" alt="Done For You Pros" class="logo" style="max-width: 200px; height: auto;">
             </div>
             <h1 class="header-title">🎉 CONGRATULATIONS! 🎉</h1>
             <p class="header-subtitle">You're a Winner in Our Scratch & Win Game!</p>

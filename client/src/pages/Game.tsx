@@ -530,12 +530,12 @@ export default function Game() {
       {/* Lose Popup for First Card */}
       {showLosePopup && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-3xl max-w-md w-full mx-4 shadow-2xl animate-bounce">
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-3xl max-w-md w-full mx-4 shadow-2xl animate-float">
             <div className="bg-white rounded-2xl p-6 text-center">
-              <div className="text-5xl mb-4 animate-pulse">😅</div>
+              <div className="text-5xl mb-4 animate-wiggle">😅</div>
               
               <h3
-                className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"
+                className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 animate-pulse"
                 style={wayComeFontStyle}
               >
                 OOPS!
@@ -548,7 +548,7 @@ export default function Game() {
                 You didn't win this round, but <strong>don't give up!</strong>
               </p>
               
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg mb-6 border-2 border-yellow-400">
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg mb-6 border-2 border-yellow-400 animate-glow">
                 <p
                   className="text-base font-semibold text-orange-800 mb-2"
                   style={{ fontFamily: "Montserrat, sans-serif" }}
@@ -565,7 +565,7 @@ export default function Game() {
               
               <button
                 onClick={() => setShowLosePopup(false)}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 animate-button-pulse"
                 style={{ fontFamily: "Montserrat, sans-serif" }}
               >
                 🎲 Get My Second Card!

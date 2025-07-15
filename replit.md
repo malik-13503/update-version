@@ -149,6 +149,11 @@ The application follows a monorepo structure with separate client and server dir
 - July 15, 2025. Implemented public API endpoint for video requirement setting
 - July 15, 2025. Updated registration form to conditionally require video watching based on admin setting
 - July 15, 2025. Added video_requirement_enabled setting to database with default value 'true'
+- July 15, 2025. Fixed email sending API call syntax error that was preventing winner emails from being sent
+- July 15, 2025. Enhanced lose popup with smooth floating animation and eye-catching visual effects
+- July 15, 2025. Added custom CSS animations (float, wiggle, glow, buttonPulse) for better user experience
+- July 15, 2025. Improved email template with enhanced gradient color scheme using brand colors
+- July 15, 2025. Fixed logo display in winner confirmation emails with proper image hosting
 
 ## User Preferences
 
