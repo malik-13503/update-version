@@ -49,6 +49,7 @@ export default function RegistrationForm({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const [showEmailWarning, setShowEmailWarning] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -81,11 +82,15 @@ export default function RegistrationForm({
       }, 1500);
     },
     onError: (error: any) => {
-      toast({
-        title: "Registration Failed",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
+      if (error.message && error.message.includes("Email already registered")) {
+        setShowEmailWarning(true);
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: error.message || "Please try again.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -344,6 +349,91 @@ export default function RegistrationForm({
           </div>
         </div>
       </div>
+
+      {/* Eye-catching Email Already Exists Warning Popup */}
+      {showEmailWarning && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform animate-pulse">
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-orange-500 to-red-500 rounded-3xl animate-pulse opacity-20"></div>
+            
+            {/* Warning Icon */}
+            <div className="relative text-center mb-6">
+              <div className="inline-block p-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-full animate-bounce shadow-lg">
+                <Mail className="text-white animate-spin" size={40} />
+              </div>
+              <div className="absolute -top-2 -right-2 bg-yellow-400 rounded-full p-1 animate-ping">
+                <Sparkles className="text-red-600" size={20} />
+              </div>
+            </div>
+
+            {/* Warning Title */}
+            <h3 
+              className="text-2xl font-black text-center mb-4 text-red-600 animate-pulse"
+              style={{ fontFamily: "Montserrat, sans-serif" }}
+            >
+              🚨 EMAIL ALREADY EXISTS!
+            </h3>
+
+            {/* Warning Message */}
+            <div className="text-center mb-6">
+              <p 
+                className="text-lg font-bold text-gray-800 mb-2 leading-tight"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                This email is already registered!
+              </p>
+              <p 
+                className="text-sm text-gray-600 mb-4"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                You can only play once per email address. Try using a different email or contact support.
+              </p>
+              
+              {/* Animated Contact Info */}
+              <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-4 rounded-2xl border-2 border-dashed border-orange-400 animate-pulse">
+                <p 
+                  className="text-sm font-bold text-[#2C5CDC] mb-1"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  Need Help?
+                </p>
+                <p 
+                  className="text-lg font-black text-[#F76D46] animate-bounce"
+                  style={{ fontFamily: "Montserrat, sans-serif" }}
+                >
+                  📞 (310) 295-6355
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col space-y-3">
+              <Button
+                onClick={() => setShowEmailWarning(false)}
+                className="w-full bg-gradient-to-r from-[#F76D46] to-[#2C5CDC] hover:from-[#F76D46] hover:to-[#2C5CDC] text-white font-black py-4 px-6 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-lg"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                <CheckCircle className="mr-2" size={20} />
+                GOT IT!
+              </Button>
+              
+              <Button
+                onClick={() => {
+                  setShowEmailWarning(false);
+                  form.reset();
+                }}
+                variant="outline"
+                className="w-full border-2 border-gray-300 hover:border-[#2C5CDC] text-gray-700 font-bold py-3 px-6 rounded-xl transition-all duration-300"
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+              >
+                <Mail className="mr-2" size={16} />
+                Try Different Email
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
