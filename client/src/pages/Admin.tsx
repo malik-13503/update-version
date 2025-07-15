@@ -1192,6 +1192,28 @@ export default function Admin() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Video Requirement Toggle */}
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
+                    <div className="flex-1">
+                      <Label className="text-sm font-semibold text-purple-800 mb-1 block" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Video Requirement
+                      </Label>
+                      <p className="text-xs text-purple-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        Require users to watch video before registration form unlocks
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings?.find(s => s.key === 'video_requirement_enabled')?.value === 'true'}
+                      onCheckedChange={(checked) => {
+                        updateSettingMutation.mutate({
+                          key: 'video_requirement_enabled',
+                          value: checked ? 'true' : 'false'
+                        });
+                      }}
+                      disabled={updateSettingMutation.isPending}
+                    />
+                  </div>
+
                   {/* Duplicate Email Check Toggle */}
                   <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200">
                     <div className="flex-1">
@@ -1214,18 +1236,32 @@ export default function Admin() {
                     />
                   </div>
 
-                  {/* Status Indicator */}
-                  <div className="flex items-center justify-center space-x-2 p-2 bg-white rounded-lg border border-purple-200">
-                    <div className={`w-3 h-3 rounded-full ${
-                      settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
-                        ? 'bg-green-500 animate-pulse' 
-                        : 'bg-red-500'
-                    }`}></div>
-                    <span className="text-sm font-medium text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                      {settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
-                        ? 'Email Check Enabled' 
-                        : 'Email Check Disabled'}
-                    </span>
+                  {/* Status Indicators */}
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="flex items-center justify-center space-x-2 p-2 bg-white rounded-lg border border-purple-200">
+                      <div className={`w-3 h-3 rounded-full ${
+                        settings?.find(s => s.key === 'video_requirement_enabled')?.value === 'true' 
+                          ? 'bg-green-500 animate-pulse' 
+                          : 'bg-red-500'
+                      }`}></div>
+                      <span className="text-sm font-medium text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        {settings?.find(s => s.key === 'video_requirement_enabled')?.value === 'true' 
+                          ? 'Video Required' 
+                          : 'Video Optional'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2 p-2 bg-white rounded-lg border border-purple-200">
+                      <div className={`w-3 h-3 rounded-full ${
+                        settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
+                          ? 'bg-green-500 animate-pulse' 
+                          : 'bg-red-500'
+                      }`}></div>
+                      <span className="text-sm font-medium text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                        {settings?.find(s => s.key === 'duplicate_email_check')?.value === 'true' 
+                          ? 'Email Check Enabled' 
+                          : 'Email Check Disabled'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Settings Info */}
@@ -1234,8 +1270,9 @@ export default function Admin() {
                       <AlertCircle className="w-4 h-4 text-purple-600 mt-0.5" />
                       <div>
                         <p className="text-xs text-purple-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                          <strong>Enabled:</strong> Users see warning popup for duplicate emails<br/>
-                          <strong>Disabled:</strong> Users can play multiple times with same email
+                          <strong>Video Required:</strong> Users must watch video to unlock registration<br/>
+                          <strong>Video Optional:</strong> Users can register without watching video<br/>
+                          <strong>Email Check:</strong> Prevents duplicate registrations with same email
                         </p>
                       </div>
                     </div>

@@ -129,6 +129,11 @@ export class DatabaseStorage implements IStorage {
         key: 'duplicate_phone_check',
         value: 'true',
         description: 'Enable duplicate phone checking to prevent multiple registrations with same phone'
+      },
+      {
+        key: 'video_requirement_enabled',
+        value: 'true',
+        description: 'Require users to watch video before registration form unlocks'
       }
     ];
 

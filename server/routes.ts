@@ -256,6 +256,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public settings routes (for frontend consumption)
+  app.get("/api/settings/video_requirement_enabled", async (req, res) => {
+    try {
+      const setting = await storage.getSetting("video_requirement_enabled");
+      
+      if (!setting) {
+        // Default to true if setting doesn't exist
+        res.json({ value: "true" });
+      } else {
+        res.json(setting);
+      }
+    } catch (error) {
+      console.error("Setting fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
   // Settings routes (admin protected)
   app.get("/api/admin/settings", requireAuth, async (req, res) => {
     try {

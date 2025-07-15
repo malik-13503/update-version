@@ -145,6 +145,10 @@ The application follows a monorepo structure with separate client and server dir
 - July 15, 2025. Added email notification message to winner popup informing users about confirmation email
 - July 15, 2025. Updated email sender to use winner@amazingworldmedia.com for professional branding
 - July 15, 2025. Confirmed email system working properly with Resend API integration
+- July 15, 2025. Added video requirement control feature to admin dashboard Tools section
+- July 15, 2025. Implemented public API endpoint for video requirement setting
+- July 15, 2025. Updated registration form to conditionally require video watching based on admin setting
+- July 15, 2025. Added video_requirement_enabled setting to database with default value 'true'
 
 ## User Preferences
 
