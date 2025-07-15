@@ -217,15 +217,7 @@ export default function Admin() {
     setSelectAll(!selectAll);
   };
 
-  // Update select all state when users are selected/deselected
-  useEffect(() => {
-    if (filteredRegistrations.length > 0) {
-      const allSelected = filteredRegistrations.every(reg => selectedUsers.includes(reg.id));
-      setSelectAll(allSelected);
-    } else {
-      setSelectAll(false);
-    }
-  }, [selectedUsers, filteredRegistrations]);
+
 
   // Handle bulk delete
   const handleBulkDelete = () => {
@@ -429,6 +421,16 @@ export default function Admin() {
         return 0;
     }
   }) || [];
+
+  // Update select all state when users are selected/deselected
+  useEffect(() => {
+    if (filteredRegistrations.length > 0) {
+      const allSelected = filteredRegistrations.every(reg => selectedUsers.includes(reg.id));
+      setSelectAll(allSelected);
+    } else {
+      setSelectAll(false);
+    }
+  }, [selectedUsers, filteredRegistrations]);
 
   const isThisWeek = (date: Date) => {
     const today = new Date();
