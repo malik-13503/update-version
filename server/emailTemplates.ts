@@ -455,6 +455,10 @@ export const createWinnerEmailTemplate = (data: WinnerEmailData) => {
 export const sendWinnerEmail = async (data: WinnerEmailData): Promise<boolean> => {
   try {
     const resend = getResend();
+    
+    // For testing, provide clearer error messages
+    console.log('Attempting to send email to:', data.userEmail);
+    
     const { data: result, error } = await resend.emails.send({
       from: 'Done For You Pros Winner <onboarding@resend.dev>',
       to: data.userEmail,
@@ -464,6 +468,14 @@ export const sendWinnerEmail = async (data: WinnerEmailData): Promise<boolean> =
 
     if (error) {
       console.error('Error sending winner email:', error);
+      // Check if it's a domain verification error
+      if (error.message && error.message.includes('domain is not verified')) {
+        console.error('Domain verification required. Use onboarding@resend.dev for testing.');
+      }
+      // Check if it's a test email restriction
+      if (error.message && error.message.includes('testing emails to your own email')) {
+        console.error('Test email restriction: You can only send test emails to your own verified email address.');
+      }
       return false;
     }
 

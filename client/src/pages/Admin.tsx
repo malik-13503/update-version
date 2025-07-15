@@ -13,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Trash2, Users, Eye, Calendar, LogOut, Settings, Download, FileText, FileSpreadsheet,
   TrendingUp, TrendingDown, Mail, Phone, Video, BarChart3, PieChart, Activity,
-  Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, Globe
+  Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, Globe, AlertTriangle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Registration, User, UpdateUserData } from "@shared/schema";
@@ -1086,10 +1086,29 @@ export default function Admin() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {/* Email Testing Notice */}
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-start space-x-2">
+                      <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-amber-800 mb-1" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          Email Testing Notice
+                        </h4>
+                        <p className="text-sm text-amber-700 mb-2" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          Currently using development mode with <code className="bg-amber-100 px-1 rounded">onboarding@resend.dev</code>
+                        </p>
+                        <p className="text-xs text-amber-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                          • For testing: Use your own verified email address<br/>
+                          • For production: Verify your domain at resend.com/domains
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <form onSubmit={handleTestEmail} className="space-y-3">
                     <Input
                       type="email"
-                      placeholder="Enter email address"
+                      placeholder="Enter your verified email address"
                       value={testEmail}
                       onChange={(e) => setTestEmail(e.target.value)}
                       className="focus:border-yellow-500 focus:ring-yellow-500"
