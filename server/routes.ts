@@ -159,6 +159,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk delete registrations
+  app.post("/api/admin/registrations/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid or empty IDs array" });
+      }
+
+      // Validate all IDs are numbers
+      const validIds = ids.filter(id => typeof id === 'number' && !isNaN(id));
+      if (validIds.length !== ids.length) {
+        return res.status(400).json({ message: "All IDs must be valid numbers" });
+      }
+
+      await storage.bulkDeleteRegistrations(validIds);
+      res.json({ message: `${validIds.length} registrations deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete error:", error);
+      res.status(500).json({ message: "Failed to delete registrations" });
+    }
+  });
+
   // Update admin credentials
   app.put("/api/admin/update-credentials", requireAuth, async (req: AuthRequest, res: Response) => {
     try {

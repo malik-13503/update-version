@@ -12,6 +12,7 @@ export interface IStorage {
   getRegistrationCount(): Promise<number>;
   getAllRegistrations(): Promise<Registration[]>;
   deleteRegistration(id: number): Promise<void>;
+  bulkDeleteRegistrations(ids: number[]): Promise<void>;
   createDefaultAdmin(): Promise<void>;
   getSetting(key: string): Promise<Setting | undefined>;
   setSetting(key: string, value: string, description?: string): Promise<Setting>;
@@ -63,6 +64,14 @@ export class DatabaseStorage implements IStorage {
 
   async deleteRegistration(id: number): Promise<void> {
     await db.delete(registrations).where(eq(registrations.id, id));
+  }
+
+  async bulkDeleteRegistrations(ids: number[]): Promise<void> {
+    if (ids.length === 0) return;
+    
+    for (const id of ids) {
+      await db.delete(registrations).where(eq(registrations.id, id));
+    }
   }
 
   async updateUser(id: number, updateData: UpdateUserData): Promise<User> {

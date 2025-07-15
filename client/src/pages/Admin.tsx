@@ -14,7 +14,8 @@ import { Switch } from "@/components/ui/switch";
 import { 
   Trash2, Users, Eye, Calendar, LogOut, Settings, Download, FileText, FileSpreadsheet,
   TrendingUp, TrendingDown, Mail, Phone, Video, BarChart3, PieChart, Activity,
-  Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, Globe, AlertTriangle
+  Search, Filter, RefreshCw, AlertCircle, CheckCircle, Clock, Globe, AlertTriangle,
+  Check, X
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Registration, User, UpdateUserData } from "@shared/schema";
@@ -34,6 +35,8 @@ export default function Admin() {
     password: "",
   });
   const [testEmail, setTestEmail] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   // Check authentication
   const {
@@ -161,6 +164,82 @@ export default function Admin() {
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this registration?")) {
       deleteRegistration.mutate(id);
+    }
+  };
+
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const response = await fetch("/api/admin/registrations/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete users");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/registrations"] });
+      setSelectedUsers([]);
+      setSelectAll(false);
+      toast({
+        title: "Success",
+        description: `${selectedUsers.length} users deleted successfully`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle user selection
+  const handleUserSelect = (userId: number) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  // Handle select all
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filteredRegistrations.map(reg => reg.id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  // Update select all state when users are selected/deselected
+  useEffect(() => {
+    if (filteredRegistrations.length > 0) {
+      const allSelected = filteredRegistrations.every(reg => selectedUsers.includes(reg.id));
+      setSelectAll(allSelected);
+    } else {
+      setSelectAll(false);
+    }
+  }, [selectedUsers, filteredRegistrations]);
+
+  // Handle bulk delete
+  const handleBulkDelete = () => {
+    if (selectedUsers.length === 0) {
+      toast({
+        title: "No Selection",
+        description: "Please select users to delete",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${selectedUsers.length} selected users? This action cannot be undone.`)) {
+      bulkDeleteMutation.mutate(selectedUsers);
     }
   };
 
@@ -802,9 +881,28 @@ export default function Admin() {
 
                 {/* Results Summary */}
                 <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                    Showing {filteredRegistrations.length} of {totalRegistrations} users
-                  </span>
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-600" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                      Showing {filteredRegistrations.length} of {totalRegistrations} users
+                    </span>
+                    {selectedUsers.length > 0 && (
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          {selectedUsers.length} selected
+                        </Badge>
+                        <Button
+                          onClick={handleBulkDelete}
+                          variant="destructive"
+                          size="sm"
+                          disabled={bulkDeleteMutation.isPending}
+                          className="bg-red-500 hover:bg-red-600 text-white"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Selected
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex space-x-2">
                     <Button
                       onClick={exportToCSV}
@@ -842,6 +940,17 @@ export default function Admin() {
                     <table className="w-full table-auto">
                       <thead className="bg-gray-50">
                         <tr>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={selectAll}
+                                onChange={handleSelectAll}
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                              />
+                              <span>Select All</span>
+                            </div>
+                          </th>
                           <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>User</th>
                           <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Contact</th>
                           <th className="text-left py-4 px-6 font-semibold text-gray-700" style={{ fontFamily: "Montserrat, sans-serif" }}>Status</th>
@@ -857,6 +966,14 @@ export default function Admin() {
                               index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
                             }`}
                           >
+                            <td className="py-4 px-6">
+                              <input
+                                type="checkbox"
+                                checked={selectedUsers.includes(registration.id)}
+                                onChange={() => handleUserSelect(registration.id)}
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                              />
+                            </td>
                             <td className="py-4 px-6">
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
