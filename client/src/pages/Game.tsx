@@ -275,18 +275,12 @@ export default function Game() {
     setEmailSending(true);
     
     try {
-      await apiRequest("/api/email/winner", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: winnerEmail,
-          userName: winnerName,
-          prizeName: "Dishwasher New Water Valve Installation",
-          prizeValue: "$591",
-          phoneNumber: "(310) 295-6355"
-        }),
+      await apiRequest("POST", "/api/email/winner", {
+        userEmail: winnerEmail,
+        userName: winnerName,
+        prizeName: "Dishwasher New Water Valve Installation",
+        prizeValue: "$591",
+        phoneNumber: "(310) 295-6355"
       });
       
       // Show winner popup after email is sent
@@ -306,18 +300,12 @@ export default function Game() {
     setEmailSending(true);
     
     try {
-      await apiRequest("/api/email/winner", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: regData.email,
-          userName: regData.name,
-          prizeName: "Dishwasher New Water Valve Installation",
-          prizeValue: "$591",
-          phoneNumber: regData.phone
-        }),
+      await apiRequest("POST", "/api/email/winner", {
+        userEmail: regData.email,
+        userName: regData.name,
+        prizeName: "Dishwasher New Water Valve Installation",
+        prizeValue: "$591",
+        phoneNumber: regData.phone
       });
       
       setTimeout(() => setGameComplete(true), 500);
