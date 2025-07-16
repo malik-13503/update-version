@@ -1,5 +1,8 @@
 # GitHub Upload Instructions
 
+## ✅ FIXED: Asset Import Issue
+The Railway deployment error has been resolved! All asset imports have been updated from `@assets/` aliases to relative paths for better build compatibility.
+
 ## Ready for Upload
 Your project is ready for GitHub upload and Railway deployment!
 

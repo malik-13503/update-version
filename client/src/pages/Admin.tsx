@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Registration, User, UpdateUserData } from "@shared/schema";
-import logoPath from "@assets/logo_1751279296203.png";
+import logoPath from "../../../attached_assets/logo_1751279296203.png";
 
 export default function Admin() {
   const { toast } = useToast();

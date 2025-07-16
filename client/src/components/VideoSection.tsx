@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Play, PlayCircle } from "lucide-react";
-import videoFile from "@assets/Michael Patrick - PART 1 D4UP Scratch & Win (1)_1751280936821.mp4";
+import videoFile from "../../../attached_assets/Michael Patrick - PART 1 D4UP Scratch & Win (1)_1751280936821.mp4";
 
 interface VideoSectionProps {
   onVideoComplete: () => void;

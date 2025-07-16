@@ -1,5 +1,5 @@
 import { Phone } from "lucide-react";
-import logoImage from "@assets/logo_1751279296203.png";
+import logoImage from "../../../attached_assets/logo_1751279296203.png";
 
 export default function Footer() {
   return (
