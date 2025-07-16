@@ -70,27 +70,18 @@ An advanced interactive scratch-off lottery game platform featuring sophisticate
    npm run dev
    ```
 
-## 🚀 Deployment
+## 🚀 Railway Deployment
 
-### Prerequisites
-- Node.js 18+ environment
-- PostgreSQL database
-- Resend API account
+### Quick Deploy
+1. Go to [Railway.app](https://railway.app)
+2. Connect your GitHub repository
+3. Add PostgreSQL service
+4. Set environment variables:
+   - `RESEND_API_KEY` (get from resend.com)
+   - `NODE_ENV=production`
+5. Deploy automatically
 
-### Build for Production
-```bash
-npm run build
-```
-
-### Deploy to Replit
-1. Import project to Replit
-2. Set environment variables in Replit Secrets
-3. Run the application
-
-### Deploy to Other Platforms
-- **Vercel**: Connect GitHub repository and deploy
-- **Netlify**: Import from GitHub with build settings
-- **Railway**: Deploy with PostgreSQL addon
+See `RAILWAY_DEPLOYMENT.md` for detailed instructions.
 
 ## 📊 Admin Dashboard
 

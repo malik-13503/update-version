@@ -1,173 +1,116 @@
-# Overview
+# D4U Pros Scratch & Win Game Platform
 
-This is a full-stack web application built as a marketing landing page for "Done For You Pros," a service company. The application features a video section, game preview, and registration form with a PostgreSQL database backend. It's designed as a lead generation tool with gamification elements to encourage user engagement.
+## Overview
 
-## System Architecture
-
-The application follows a monorepo structure with separate client and server directories:
-
-- **Frontend**: React with TypeScript using Vite as the build tool
-- **Backend**: Express.js server with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
-- **UI Framework**: Tailwind CSS with shadcn/ui components
-- **State Management**: TanStack Query for server state
-- **Form Handling**: React Hook Form with Zod validation
-
-## Key Components
-
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite with custom configuration for development and production
-- **Routing**: Wouter for lightweight client-side routing  
-- **Styling**: Tailwind CSS with custom brand colors and shadcn/ui component library
-- **Forms**: React Hook Form with Zod schema validation
-- **HTTP Client**: Custom fetch wrapper with TanStack Query for caching
-
-### Backend Architecture
-- **Server**: Express.js with TypeScript
-- **Database ORM**: Drizzle ORM with PostgreSQL dialect
-- **Database Provider**: Neon serverless PostgreSQL
-- **Session Management**: Built-in with connect-pg-simple
-- **API Structure**: RESTful endpoints with proper error handling
-
-### Database Schema
-- **Users Table**: Basic user authentication (id, username, password)
-- **Registrations Table**: Lead capture (id, name, phone, email, videoWatched, createdAt)
-- **Migration System**: Drizzle Kit for schema migrations
-
-## Data Flow
-
-1. **User Journey**: Home page → Video watching → Form unlock → Registration → Database storage
-2. **Video Tracking**: Progress monitoring unlocks registration form at 80% completion
-3. **Lead Capture**: Form validation → Email uniqueness check → Database insertion
-4. **Statistics**: Real-time registration count for social proof
-
-## External Dependencies
-
-### Core Dependencies
-- **@neondatabase/serverless**: Serverless PostgreSQL connection
-- **drizzle-orm**: Type-safe ORM with PostgreSQL support
-- **@tanstack/react-query**: Server state management and caching
-- **@radix-ui/***: Accessible UI primitives for shadcn/ui
-- **react-hook-form**: Form state management
-- **zod**: Runtime type validation
-
-### Development Tools
-- **TypeScript**: Full type safety across frontend and backend
-- **Vite**: Fast development server and optimized builds
-- **Tailwind CSS**: Utility-first styling framework
-- **ESBuild**: Fast JavaScript bundler for server builds
-
-## Deployment Strategy
-
-### Build Process
-- **Frontend**: Vite builds optimized React bundle to `dist/public`
-- **Backend**: ESBuild bundles Express server to `dist/index.js`
-- **Database**: Drizzle migrations applied via `db:push` command
-
-### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string (required)
-- `NODE_ENV`: Environment mode (development/production)
-
-### Hosting Requirements
-- Node.js environment supporting ESM modules
-- PostgreSQL database (Neon serverless recommended)
-- Static file serving capability for frontend assets
-
-## Changelog
-
-- June 30, 2025. Initial setup
-- June 30, 2025. Updated color scheme to use specific brand colors (#2C5CDC and #F76D46)
-- June 30, 2025. Added Montserrat font throughout the application
-- June 30, 2025. Updated form design with gradient border container
-- June 30, 2025. Updated footer to match reference design with light background
-- June 30, 2025. Added user's video file to video section
-- July 3, 2025. Replaced local video with YouTube embed (https://youtu.be/Lh6cT8kCo64) for faster loading
-- July 3, 2025. Updated video section to use YouTube thumbnail preview and iframe embed
-- July 3, 2025. Added automatic redirect from registration form to game page after submission
-- July 6, 2025. Enhanced scratch-off game with realistic finger/touch interaction using canvas technology
-- July 6, 2025. Added "Play Now" button to start game, removing prize wheel image display
-- July 6, 2025. Implemented eye-catching winner popup with animated elements and call-to-action
-- July 6, 2025. Added complete authentication system for admin dashboard
-- July 6, 2025. Created login page with default credentials (admin@doneforyoupros.com / password@security)
-- July 6, 2025. Enhanced admin dashboard with gradient color scheme and modern UI
-- July 6, 2025. Added admin credential management and password update functionality
-- July 6, 2025. Implemented data export features (CSV and JSON formats)
-- July 6, 2025. Added session-based authentication with protected admin routes
-- July 6, 2025. Enhanced admin statistics cards with brand color gradients
-- July 6, 2025. Completely redesigned admin dashboard with comprehensive features
-- July 6, 2025. Added logo integration throughout admin interface with gradient header
-- July 6, 2025. Implemented tabbed dashboard (Overview, Users, Analytics, Tools)
-- July 6, 2025. Added advanced search/filtering capabilities for user management
-- July 6, 2025. Enhanced analytics with video engagement metrics and registration trends
-- July 6, 2025. Created tools section with data export and system management features
-- July 6, 2025. Fixed game page to start immediately without "Play Now" button
-- July 6, 2025. Simplified scratch card prize display to prevent text overlap
-- July 6, 2025. Updated all logo references to use proper asset imports
-- July 6, 2025. Removed visual lock overlay and implemented backend logic for card sequence security
-- July 6, 2025. Added eye-catching warning popup when users try to scratch Card 2 before completing Card 1
-- July 6, 2025. Made winner popup fully responsive with smaller text sizes for mobile devices
-- July 6, 2025. Removed "limited offer" and "call within 24 hours" text from winner popup
-- July 6, 2025. Updated winner popup with real Done For You Pros phone number (310) 295-6355
-- July 6, 2025. Enhanced popup responsiveness with proper mobile breakpoints and reduced content sizing
-- July 6, 2025. Implemented complete Card 2 scratching prevention until Card 1 is fully completed
-- July 6, 2025. Enhanced ScratchCard component with onInitialTouch detection for immediate blocking
-- July 6, 2025. Added clickable close button to warning popup with manual dismiss functionality
-- July 6, 2025. Fixed scratching bypass issue - Card 2 now completely blocked until Card 1 completion
-- July 6, 2025. Warning popup shows every time user attempts to interact with locked Card 2
-- July 6, 2025. Removed reference code section from winner popup as requested
-- July 6, 2025. Simplified winner popup to show only "Back To Home" button (removed "Continue Playing")
-- July 6, 2025. Enhanced winner popup with dark background theme for attractive visual appeal
-- July 6, 2025. Improved confetti animation z-index to ensure visibility above dark background
-- July 14, 2025. Enhanced mobile responsiveness for trophy and video icons in registration form
-- July 14, 2025. Improved "WATCH VIDEO TO UNLOCK" text scaling for better mobile readability
-- July 14, 2025. Added responsive padding and spacing for registration button on mobile devices
-- July 14, 2025. Replaced YouTube video with local video file for faster loading
-- July 14, 2025. Optimized video player with HTML5 video element and metadata preloading
-- July 14, 2025. Added proper video progress tracking and completion detection for local video
-- July 14, 2025. Removed video completion message overlay to avoid interrupting video viewing experience
-- July 14, 2025. Enhanced desktop popup responsiveness with larger sizes and better text scaling for 1080p+ screens
-- July 14, 2025. Balanced popup sizing to be more responsive across all screen sizes without being too large on desktop
-- July 14, 2025. Enhanced confetti to loop continuously until winner popup is closed, creating more celebratory effect
-- July 15, 2025. Implemented complete winner email system with Resend API integration
-- July 15, 2025. Added email collection prompt when users win with name and email fields
-- July 15, 2025. Created professional HTML email template with brand colors and logo
-- July 15, 2025. Enhanced admin dashboard with email testing functionality
-- July 15, 2025. Added winner email sending with prize details and contact information
-- July 15, 2025. Configured Resend API with proper error handling and fallback email domain
-- July 15, 2025. Added game page security to prevent direct access without registration
-- July 15, 2025. Implemented lose popup for first card with "Get Second Card" button
-- July 15, 2025. Added automatic email sending for second card wins using registration data
-- July 15, 2025. Enhanced email template with new logo and improved Outlook compatibility
-- July 15, 2025. Added CSV export functionality to admin dashboard Users tab
-- July 15, 2025. Fixed winner email confirmation system with proper API endpoints
-- July 15, 2025. Implemented localStorage storage for user registration data across pages
-- July 15, 2025. Added email notification message to winner popup informing users about confirmation email
-- July 15, 2025. Updated email sender to use winner@amazingworldmedia.com for professional branding
-- July 15, 2025. Confirmed email system working properly with Resend API integration
-- July 15, 2025. Added video requirement control feature to admin dashboard Tools section
-- July 15, 2025. Implemented public API endpoint for video requirement setting
-- July 15, 2025. Updated registration form to conditionally require video watching based on admin setting
-- July 15, 2025. Added video_requirement_enabled setting to database with default value 'true'
-- July 15, 2025. Fixed email sending API call syntax error that was preventing winner emails from being sent
-- July 15, 2025. Enhanced lose popup with smooth floating animation and eye-catching visual effects
-- July 15, 2025. Added custom CSS animations (float, wiggle, glow, buttonPulse) for better user experience
-- July 15, 2025. Improved email template with enhanced gradient color scheme using brand colors
-- July 15, 2025. Fixed logo display in winner confirmation emails with proper image hosting
-- July 15, 2025. Created completely new simple and eye-catching email template with clean design
-- July 15, 2025. Replaced complex email layout with streamlined, professional winner notification template
-- July 15, 2025. Added styled text logo that displays reliably across all email clients
-- July 15, 2025. Enhanced admin dashboard with professional custom delete confirmation dialogs
-- July 15, 2025. Replaced basic browser alerts with eye-catching modal dialogs with gradient design
-- July 15, 2025. Added warning icons and proper visual hierarchy for delete confirmations
-- July 15, 2025. Implemented separate dialogs for single delete and bulk delete operations
-- July 15, 2025. Created comprehensive documentation for GitHub repository deployment
-- July 15, 2025. Added README.md, DEPLOYMENT_GUIDE.md, and FILE_MANIFEST.md for easy setup
-- July 15, 2025. Prepared complete project structure for GitHub repository upload
+This is a comprehensive interactive scratch-off lottery game platform built with React and Express.js. The system features video-gated registration, dual scratch card games, winner notifications, and an admin dashboard. The application combines modern web technologies with gamification elements to create an engaging user experience.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
-Brand colors: #2C5CDC (blue) and #F76D46 (orange)
-Font: Montserrat for all text elements
-Form design: Gradient border container with white background interior
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite with hot module replacement
+- **Styling**: Tailwind CSS with shadcn/ui component library
+- **State Management**: TanStack Query for server state management
+- **Form Handling**: React Hook Form with Zod validation
+- **Routing**: Wouter for lightweight client-side routing
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js server
+- **Language**: TypeScript for type safety
+- **Session Management**: Express session middleware with PostgreSQL storage
+- **Email Service**: Resend API for transactional emails
+- **Database**: PostgreSQL with Drizzle ORM
+
+### Database Schema
+- **Users Table**: Admin authentication (username, password, role)
+- **Registrations Table**: User submissions (name, phone, email, video_watched)
+- **Settings Table**: Configurable system settings
+
+## Key Components
+
+### Game System
+- **Interactive Scratch Cards**: HTML5 Canvas-based scratch mechanics with touch/mouse support
+- **Two-Card System**: Sequential unlocking with security validation
+- **Prize Logic**: Configurable win conditions and prize distribution
+- **Winner Notifications**: Animated celebration popups and email confirmations
+
+### Video Integration
+- **HTML5 Video Player**: Custom controls with progress tracking
+- **Completion Gating**: 80% watch requirement before form access
+- **Progress Persistence**: Video state maintained across sessions
+
+### Admin Dashboard
+- **Authentication**: Session-based login system
+- **User Management**: View, search, filter, and delete registrations
+- **Analytics**: Registration trends and engagement metrics
+- **Settings**: Video requirements and duplicate checking toggles
+- **Email Testing**: Winner notification system validation
+
+### Security Features
+- **Session Management**: Secure admin authentication
+- **Form Validation**: Client and server-side input validation
+- **Duplicate Prevention**: Email-based registration checking
+- **Game Security**: Registration validation before game access
+
+## Data Flow
+
+1. **User Registration Flow**:
+   - User watches video (80% completion required)
+   - Form becomes available for completion
+   - Server validates and stores registration
+   - User redirected to game with session data
+
+2. **Game Flow**:
+   - Security check for valid registration
+   - First scratch card presented
+   - Second card unlocked after first completion
+   - Winner status determined and notifications sent
+
+3. **Admin Flow**:
+   - Admin login with session creation
+   - Dashboard displays user data and analytics
+   - Settings management for system configuration
+   - Email testing and user management actions
+
+## External Dependencies
+
+### Email Service
+- **Resend API**: Transactional email delivery
+- **Winner Templates**: HTML email templates for prize notifications
+- **Configuration**: Environment-based API key management
+
+### Database
+- **PostgreSQL**: Primary data storage
+- **Drizzle ORM**: Type-safe database queries
+- **Connection Pooling**: Neon serverless connection handling
+
+### UI Components
+- **Radix UI**: Accessible component primitives
+- **Tailwind CSS**: Utility-first styling
+- **shadcn/ui**: Pre-built component library
+
+## Deployment Strategy
+
+### Railway Platform
+- **One-Click Deploy**: GitHub repository integration
+- **PostgreSQL Service**: Automatically provisioned database
+- **Environment Variables**: Secure configuration management
+- **Build Process**: Automatic dependency installation and compilation
+
+### Required Environment Variables
+- `DATABASE_URL`: PostgreSQL connection string (auto-generated)
+- `RESEND_API_KEY`: Email service authentication
+- `NODE_ENV`: Production environment flag
+
+### Build Process
+1. Install dependencies via npm
+2. Client build using Vite
+3. Server compilation with esbuild
+4. Database migrations via Drizzle
+5. Default admin user creation
+
+The application follows a monorepo structure with shared TypeScript schemas, separate client and server directories, and comprehensive build tooling for production deployment.
